@@ -20,7 +20,11 @@
 
 Para ejecutar este proyecto, necesitarás agregar las siguientes variables de entorno en tu `.env` en la raíz del proyecto
 
-`PORT_SERVER` 
+- `PORT` Puerto del localhost
+
+Para trabajar con una base de datos remota usando Turso (opcional):
+- `TURSO_DATABASE_URL`
+- `TURSO_AUTH_TOKEN`
 
 ## Ejecución
 
@@ -39,7 +43,6 @@ Accede a la ruta del proyecto
 Crea las variables de entorno en tu .env
 
 ```bash
-  mkdir config 
   touch .env
 ```
 
