@@ -9,6 +9,8 @@ import (
 
 func init() {
 	config.LoadEnv()
+	config.ConnectDB()
+	config.SyncDB()
 }
 
 func main() {
@@ -20,5 +22,6 @@ func main() {
 			"message": "pong",
 		})
 	})
+
 	r.Run()
 }
