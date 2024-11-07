@@ -20,3 +20,6 @@ go.work.sum
 
 # Environment variables
 .env
+
+# Database
+*.db
