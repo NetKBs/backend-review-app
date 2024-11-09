@@ -44,11 +44,9 @@ Si no se proporcionan las variables de entorno `TURSO_DATABASE_URL` y `TURSO_AUT
 
 Si estás utilizando **Windows**, es posible que encuentres problemas con dependencias que usen **cgo** (por ejemplo, go-sqlite3), debido a la falta de compiladores adecuados. A continuación, se describen los pasos que debes seguir para resolver este problema:
 
-1. **Instala MinGW:** Descarga e instala MinGW desde su sitio web oficial. Asegúrate de seleccionar la opción de instalar los compiladores de 32 bits, ya que go-sqlite3 requiere estos compiladores para funcionar correctamente.
+1. **Instala MinGW:** Descarga e instala MinGW desde su sitio web oficial. Asegúrate de seleccionar la opción de instalar los compiladores necesarios.
 
 2. **Agrega los compiladores a la variable PATH:** Una vez instalado MinGW, debes agregar los compiladores a la variable PATH de tu sistema. Puedes hacer esto agregando la ruta de instalación de MinGW a la variable PATH.
-
-3. **Reemplaza los compiladores de 64 bits por los de 32 bits:** Si ya tienes compiladores de 64 bits instalados en tu sistema, es posible que debas reemplazarlos por los de 32 bits. Puedes hacer esto eliminando la ruta de los compiladores de 64 bits de la variable PATH y agregando la ruta de los compiladores de 32 bits.
 
 ---
 
