@@ -48,7 +48,7 @@ type ReviewImage struct {
 
 type Place struct {
 	gorm.Model
-	MapsId  uint
+	MapsId  string
 	Reviews []Review `gorm:"foreignKey:PlaceId"`
 }
 
