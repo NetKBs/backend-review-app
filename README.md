@@ -45,7 +45,7 @@ Si no se proporcionan las variables de entorno `TURSO_DATABASE_URL` y `TURSO_AUT
 El Makefile incluye comandos útiles para gestionar el proyecto. Por favor asegúrate de tener `make` disponible en tu PATH
 
 
-* `seed`: realiza un seeding (llenar de datos), en la base de datos
+* `seed`: realiza un seeding (llenado de datos), en la base de datos
 	
 
 Modo de Uso
