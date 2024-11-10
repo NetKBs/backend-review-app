@@ -8,6 +8,6 @@ import (
 
 func LoadEnv() {
 	if err := godotenv.Load(".env"); err != nil {
-		log.Fatal("Error loading .env file")
+		log.Print("Please create a .env file in the root directory of the project")
 	}
 }
