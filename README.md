@@ -40,6 +40,20 @@ Si no se proporcionan las variables de entorno `TURSO_DATABASE_URL` y `TURSO_AUT
 
 ---
 
+### 🛠️ Makefile
+
+El Makefile incluye comandos útiles para gestionar el proyecto. Por favor asegúrate de tener `make` disponible en tu PATH
+
+
+* `seed`: realiza un seeding (llenar de datos), en la base de datos
+	
+
+Modo de Uso
+```sh
+❯ make comando
+```
+---
+
 ## 🖥️ Problemas Para Usuarios Windows
 
 Si estás utilizando **Windows**, es posible que encuentres problemas con dependencias que usen **cgo** (por ejemplo, go-sqlite3), debido a la falta de compiladores adecuados. A continuación, se describen los pasos que debes seguir para resolver este problema:
