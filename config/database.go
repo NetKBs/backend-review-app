@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/NetKBs/backend-reviewapp/src/schema"
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -33,7 +34,16 @@ func ConnectDB() {
 }
 
 func SyncDB() {
-	models := []interface{}{}
+	models := []interface{}{
+		&schema.User{},
+		&schema.Review{},
+		&schema.ReviewImage{},
+		&schema.Place{},
+		&schema.Comment{},
+		&schema.Answer{},
+		&schema.Reaction{},
+		&schema.Notification{},
+	}
 
 	DB.AutoMigrate(models...)
 }
