@@ -32,10 +32,10 @@ type Reaction struct {
 
 type Review struct {
 	gorm.Model
-	UserId  uint
-	PlaceId uint
-	Text    string
-
+	UserId   uint
+	PlaceId  uint
+	Rate     uint `gorm:"check:rate BETWEEN 1 AND 5"`
+	Text     string
 	Images   []ReviewImage `gorm:"foreignKey:ReviewId"`
 	Comments []Comment     `gorm:"foreignKey:ReviewId"`
 }
