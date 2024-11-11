@@ -43,9 +43,9 @@ func seedDabase(db *gorm.DB) error {
 	}
 
 	// Reviews
-	review1 := schema.Review{UserId: user1.ID, PlaceId: place1.ID, Text: "Great place to visit!"}
-	review2 := schema.Review{UserId: user2.ID, PlaceId: place2.ID, Text: "Not worth the hype."}
-	review3 := schema.Review{UserId: user3.ID, PlaceId: place3.ID, Text: "Amazing experience!"}
+	review1 := schema.Review{UserId: user1.ID, PlaceId: place1.ID, Text: "Great place to visit!", Rate: 5}
+	review2 := schema.Review{UserId: user2.ID, PlaceId: place2.ID, Text: "Not worth the hype.", Rate: 2}
+	review3 := schema.Review{UserId: user3.ID, PlaceId: place3.ID, Text: "Amazing experience!", Rate: 4}
 	reviews := []*schema.Review{&review1, &review2, &review3}
 	if error = db.Create(&reviews).Error; error != nil {
 		return error
