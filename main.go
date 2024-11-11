@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/NetKBs/backend-reviewapp/config"
+	"github.com/NetKBs/backend-reviewapp/src/social/review"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,6 +22,8 @@ func main() {
 			"message": "pong",
 		})
 	})
+
+	review.RegisterRoutes(r)
 
 	r.Run()
 }
