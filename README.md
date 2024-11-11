@@ -79,7 +79,7 @@ Si estás utilizando **Windows**, es posible que encuentres problemas con depend
 
 3. Instalar las dependencias del proyecto:
 ```sh
-  ❯ go mod download
+  ❯ go mod tidy
 ```
 
 ### 🤖 Uso &nbsp; [<img align="center" src="https://img.shields.io/badge/Go-00ADD8.svg?style={badge_style}&logo=go&logoColor=white" />](https://golang.org/)
