@@ -5,7 +5,7 @@ import (
 	"github.com/NetKBs/backend-reviewapp/src/schema"
 )
 
-func GetReviewByIdRepository(id int) (review schema.Review, err error) {
+func GetReviewByIdRepository(id uint) (review schema.Review, err error) {
 	db := config.DB
 
 	if err = db.Where("id = ?", id).First(&review).Error; err != nil {
