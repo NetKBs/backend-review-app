@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/NetKBs/backend-reviewapp/config"
-	"github.com/NetKBs/backend-reviewapp/src/images"
+	"github.com/NetKBs/backend-reviewapp/src/image"
 	"github.com/NetKBs/backend-reviewapp/src/social/review"
 	"github.com/gin-gonic/gin"
 )
@@ -24,7 +24,7 @@ func main() {
 		})
 	})
 
-	images.RegisterRoutes(r)
+	image.RegisterRoutes(r)
 	review.RegisterRoutes(r)
 
 	r.Run()
