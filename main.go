@@ -7,8 +7,8 @@ import (
 	"github.com/NetKBs/backend-reviewapp/config"
 	"github.com/NetKBs/backend-reviewapp/src/image"
 	"github.com/NetKBs/backend-reviewapp/src/maps"
+	"github.com/NetKBs/backend-reviewapp/src/social/auth"
 	"github.com/NetKBs/backend-reviewapp/src/social/review"
-	"github.com/NetKBs/backend-reviewapp/src/user"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -33,7 +33,7 @@ func main() {
 	image.RegisterRoutes(r)
 	maps.RegisterRoutes(r)
 	review.RegisterRoutes(r)
-	user.RegisterRoutes(r)
+	auth.RegisterRoutes(r)
 
 	PORT := os.Getenv("PORT_SERVER")
 	r.Run(":" + func() string {
