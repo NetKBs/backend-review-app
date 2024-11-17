@@ -1,15 +1,15 @@
-package user
+package middlewares
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
 
-var jwtKey2 = []byte("tu_clave_secreta") // Debe ser la misma clave secreta
+var jwtKey2 = []byte("tu_clave_secreta")
 
-// AuthMiddleware verifica el token JWT
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString := c.GetHeader("Authorization")
@@ -19,12 +19,13 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
+		tokenString = strings.Split(tokenString, "Bearer ")[1]
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			return jwtKey2, nil
 		})
 
 		if err != nil || !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Token inválido"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			c.Abort()
 			return
 		}
