@@ -31,7 +31,8 @@ Para ejecutar este proyecto, necesitarás agregar las siguientes variables de en
 * `PORT_SERVER`: Puerto en el que se ejecutará el servidor.
 * `TURSO_DATABASE_URL` *(opcional)*: URL de la base de datos de TURSO.
 * `TURSO_AUTH_TOKEN` *(opcional)*: Token de autenticación para la base de datos de TURSO.
-
+* `GEOAPIFY_KEY`: Key del mapa
+* `SECRET_KEY`: Key usada para generar las firmas del jwt
 ---
 
 ## 🗄️ Base de Datos Local
