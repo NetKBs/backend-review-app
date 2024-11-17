@@ -5,6 +5,7 @@ import (
 
 	"github.com/NetKBs/backend-reviewapp/config"
 	"github.com/NetKBs/backend-reviewapp/src/image"
+	"github.com/NetKBs/backend-reviewapp/src/maps"
 	"github.com/NetKBs/backend-reviewapp/src/social/review"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -28,6 +29,7 @@ func main() {
 	})
 
 	image.RegisterRoutes(r)
+	maps.RegisterRoutes(r)
 	review.RegisterRoutes(r)
 
 	r.Run()
