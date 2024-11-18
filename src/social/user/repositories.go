@@ -31,3 +31,19 @@ func UpdateUserRepository(user *schema.User) error {
 	tx.Commit()
 	return err
 }
+func CreateUserRepository(user *schema.User) error {
+	db := config.DB
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	err := tx.Create(user).Error
+	if err != nil {
+		tx.Rollback()
+	}
+	tx.Commit()
+	return err
+}

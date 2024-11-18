@@ -2,7 +2,6 @@ package user
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -29,19 +28,14 @@ func GetUserByIdController(c *gin.Context) {
 }
 
 func handleExceptions(err error) (int, string) {
-	var status int
-	var errorMessage string
-
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		status = http.StatusNotFound
-		errorMessage = "User not found"
-
-	} else {
-		status = http.StatusInternalServerError
-		errorMessage = fmt.Sprintf("%s: %s", "Internal Server Error", err.Error())
+	switch {
+	case errors.Is(err, gorm.ErrRecordNotFound):
+		return http.StatusNotFound, "User not found"
+	default:
+		return http.StatusInternalServerError, err.Error()
 	}
-	return status, errorMessage
 }
+
 func UpdateUserController(c *gin.Context) {
 
 	var newUser UserResponseDTO
@@ -60,4 +54,28 @@ func UpdateUserController(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"User": newUser})
+}
+
+func CreateUserController(c *gin.Context) {
+	var userDTO UserResponseDTO
+
+	if err := c.ShouldBindJSON(&userDTO); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if userDTO.Username == "" || userDTO.Email == "" || userDTO.Password == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "username, email, and password are required"})
+		return
+	}
+
+	newUser, err := CreateUserService(userDTO)
+
+	if err != nil {
+		status, errorMessage := handleExceptions(err)
+		c.JSON(status, gin.H{"error": errorMessage})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"User": newUser})
 }
