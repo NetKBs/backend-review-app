@@ -58,7 +58,7 @@ func GetPlaceDetailsById(params string) (PlaceDetails, error) {
 	contacts.Twitter, ok = raw_datasource["contact:twitter"].(string)
 	contacts.Facebook, ok = raw_datasource["contact:facebook"].(string)
 	contacts.Instagram, ok = raw_datasource["contact:instagram"].(string)
-	pd.Contact = contacts
+	pd.Contacts = contacts
 
 	if parseFailed {
 		err = fmt.Errorf("failed to parse place details")

@@ -1,12 +1,12 @@
 package geoapify
 
 type PlaceDetails struct {
-	Name      string  `json:"name"`
-	Category  string  `json:"category"`
-	Address   string  `json:"address"`
-	Latitude  float64 `json:"latitude"`
-	Longitude float64 `json:"longitude"`
-	Contact   PlaceContacts
+	Name      string        `json:"name"`
+	Category  string        `json:"category"`
+	Address   string        `json:"address"`
+	Latitude  float64       `json:"latitude"`
+	Longitude float64       `json:"longitude"`
+	Contacts  PlaceContacts `json:"contacts"`
 }
 
 type PlaceContacts struct {
