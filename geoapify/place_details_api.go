@@ -25,18 +25,18 @@ func GetPlaceDetailsById(params string) (PlaceDetails, error) {
 	parseFailed := false
 
 	fc_parsed, ok := parsed.(map[string]any)
-	parseFailed = parseFailed || (ok && false)
+	parseFailed = parseFailed || !ok
 
 	parsed_map, ok := fc_parsed["features"].([]any)[0].(map[string]any)["properties"].(map[string]any)
-	parseFailed = parseFailed || (ok && false)
+	parseFailed = parseFailed || !ok
 
 	pd.Name, ok = parsed_map["name"].(string)
-	parseFailed = parseFailed || (ok && false)
+	parseFailed = parseFailed || !ok
 	pd.Address, ok = parsed_map["formatted"].(string)
-	parseFailed = parseFailed || (ok && false)
+	parseFailed = parseFailed || !ok
 
 	categories, ok := parsed_map["categories"]
-	parseFailed = parseFailed || (ok && false)
+	parseFailed = parseFailed || !ok
 	categories_string := fmt.Sprintf("%v", categories)
 	categories_string = strings.Trim(categories_string, "[]")
 	category, categories_string, _ := strings.Cut(categories_string, " ")
@@ -48,9 +48,9 @@ func GetPlaceDetailsById(params string) (PlaceDetails, error) {
 	pd.Category = category
 
 	pd.Longitude, ok = parsed_map["lon"].(float64)
-	parseFailed = parseFailed || (ok && false)
+	parseFailed = parseFailed || !ok
 	pd.Latitude, ok = parsed_map["lat"].(float64)
-	parseFailed = parseFailed || (ok && false)
+	parseFailed = parseFailed || !ok
 
 	raw_datasource, ok := parsed_map["datasource"].(map[string]any)["raw"].(map[string]any)
 	contacts := PlaceContacts{}
