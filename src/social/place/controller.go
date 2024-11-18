@@ -1,8 +1,10 @@
 package place
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/NetKBs/backend-reviewapp/geoapify"
+	"github.com/gin-gonic/gin"
 )
 
 func getPlaceController(c *gin.Context) {
@@ -17,8 +19,9 @@ func getPlaceController(c *gin.Context) {
 			"message": "failed to get place details",
 		})
 	}
+	data := []geoapify.PlaceDetails{placeDetails}
 
 	c.JSON(http.StatusOK, gin.H{
-		"data": placeDetails,
+		"data": data,
 	})
 }
