@@ -17,6 +17,15 @@ func init() {
 	config.SyncDB()
 }
 
+/*func main() {
+	r := gin.Default()
+	r.Use(cors.Default()) // Habilita CORS (considera restringirlo en producción)
+
+	r.GET("/user/:id", GetUserByIdController) // Registra la ruta para el controlador
+
+	r.Run(":8080") // Inicia el servidor en el puerto 8080
+}*/
+
 func main() {
 	r := gin.Default()
 
