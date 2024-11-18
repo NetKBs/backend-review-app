@@ -5,7 +5,7 @@ import (
 )
 
 func RegisterRoutes(router *gin.Engine) {
-	group := router.Group("/place")
+	group := router.Group("/places")
 
 	group.GET("/", getPlaceController)
 }
