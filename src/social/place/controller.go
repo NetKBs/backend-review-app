@@ -19,6 +19,6 @@ func getPlaceController(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"details": placeDetails,
+		"data": placeDetails,
 	})
 }
