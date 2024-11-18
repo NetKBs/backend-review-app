@@ -24,7 +24,7 @@ func GetUserByIdService(id uint) (userDTO UserResponseDTO, err error) {
 		DisplayName: user.DisplayName,
 		Email:       user.Email,
 		Password:    user.Password,
-		CreatedAt:   user.CreatedAt.String(),
+		CreatedAt:   user.CreatedAt.String(), //Preguntar
 		UpdatedAt:   user.UpdatedAt.String(),
 		DeletedAt:   user.DeletedAt.Time.Format(time.RFC3339),
 	}
@@ -80,4 +80,45 @@ func CreateUserService(db *gorm.DB, userDTO UserResponseDTO) (UserResponseDTO, e
 		DeletedAt:   user.DeletedAt.Time.Format(time.RFC3339),
 	}, nil
 
+}
+
+func UpdateUserService(newUser UserResponseDTO) error {
+
+	user, err := GetUserByIdRepository(newUser.ID)
+	if err != nil {
+		return err
+	}
+
+	handleChanges(&user, &newUser)
+	err = UpdateUserRepository(&user)
+
+	return err
+}
+
+func handleChanges(user *schema.User, newUser *UserResponseDTO) error {
+	var hashedPassword string
+	var err error
+	if newUser.Username != "" {
+		user.Username = newUser.Username
+	}
+	if newUser.AvatarUrl != "" {
+		user.AvatarUrl = &newUser.AvatarUrl
+	}
+	if newUser.DisplayName != "" {
+		user.DisplayName = newUser.DisplayName
+	}
+	if newUser.Email != "" {
+		user.Email = newUser.Email
+	}
+	if newUser.Password != "" {
+		hashedPassword, err = bcryptHash(newUser.Password)
+		user.Password = hashedPassword
+	}
+	return err
+}
+
+func bcryptHash(password string) (string, error) {
+	bytePassword := []byte(password)
+	hash, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost) //DefaultCost es 10
+	return string(hash), err
 }
