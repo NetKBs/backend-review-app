@@ -47,3 +47,32 @@ func CreateUserRepository(user *schema.User) error {
 	tx.Commit()
 	return err
 }
+
+// Preguntar si hay que crear la funcion de recuperar cuenta
+func DeleteUserbyIDRepository(id uint) error {
+	db := config.DB
+
+	// Iniciar transacción
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	// Buscar usuario por ID
+	var user schema.User
+	if err := tx.Where("id = ?", id).First(&user).Error; err != nil {
+		tx.Rollback()
+		return err // Retornar error si no se encuentra el usuario
+	}
+
+	// Actualizar campo DeletedAt con soft delete
+	if err := tx.Delete(&user).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Confirmar transacción
+	return tx.Commit().Error
+}

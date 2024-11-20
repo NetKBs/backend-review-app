@@ -20,7 +20,7 @@ func GetUserByIdController(c *gin.Context) {
 	user, err := GetUserByIdService(uint(revId))
 	if err != nil {
 		status, errorMessage := handleExceptions(err)
-		c.JSON(status, gin.H{"error": errorMessage})
+		c.JSON(status, gin.H{"error": errorMessage, "id": revId})
 		return
 	}
 
@@ -78,4 +78,22 @@ func CreateUserController(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"User": newUser})
+}
+
+func DeleteUserbyIdController(c *gin.Context) {
+	id := c.Param("id")
+	/*revId*/ _, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+	//err = DeleteUserByIdService(uint(revId))
+
+	/*if err != nil {
+		status, errorMessage := handleExceptions(err)
+		c.JSON(status, gin.H{"error": errorMessage})
+		return
+	}*/
+
+	c.Status(http.StatusOK)
 }

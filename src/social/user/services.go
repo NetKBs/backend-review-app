@@ -7,6 +7,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+func DeleteUserByIdService(id uint) error {
+	err := DeleteUserbyIDRepository(id)
+	return err
+}
+
 func GetUserByIdService(id uint) (userDTO UserResponseDTO, err error) {
 
 	user, err := GetUserByIdRepository(id)
@@ -70,7 +75,7 @@ func CreateUserService(userDTO UserResponseDTO) (UserResponseDTO, error) {
 
 func UpdateUserService(newUser UserResponseDTO) error {
 
-	user, err := GetUserByIdRepository(newUser.ID)
+	user, err := GetUserByIdRepository(uint(newUser.ID))
 	if err != nil {
 		return err
 	}
