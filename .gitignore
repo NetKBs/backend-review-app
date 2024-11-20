@@ -26,3 +26,6 @@ go.work.sum
 
 # Images Folder
 /images
+
+# Air config file
+.air.toml

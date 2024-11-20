@@ -2,7 +2,6 @@ package main
 
 import (
 	"net/http"
-	"os"
 
 	"github.com/NetKBs/backend-reviewapp/config"
 	"github.com/NetKBs/backend-reviewapp/src/image"
@@ -35,11 +34,5 @@ func main() {
 	review.RegisterRoutes(r)
 	auth.RegisterRoutes(r)
 
-	PORT := os.Getenv("PORT_SERVER")
-	r.Run(":" + func() string {
-		if PORT == "" {
-			return "8080"
-		}
-		return PORT
-	}())
+	r.Run()
 }
