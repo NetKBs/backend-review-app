@@ -7,10 +7,9 @@ import (
 )
 
 const placeDetailsV2 = "/v2/place-details?"
-const pDV2ByID = "id="
 
-func GetPlaceDetailsById(params string) (PlaceDetails, error) {
-	url := GEOAPIFY_SITE + placeDetailsV2 + pDV2ByID + params + "&lang=es"
+func GetPlaceDetailsById(params string) (pd PlaceDetails, err error) {
+	url := GEOAPIFY_SITE + placeDetailsV2 + "id=" + params + "&lang=es"
 	url += "&apiKey=" + apiKey
 
 	status, body, err := getJSON(url)
@@ -18,7 +17,27 @@ func GetPlaceDetailsById(params string) (PlaceDetails, error) {
 		fmt.Println(err)
 		return PlaceDetails{}, err
 	}
-	pd := PlaceDetails{}
+	pd, err = parsePlaceDetails(body)
+	return pd, err
+}
+
+func GetPlaceDetailsByCoord(lat string, lon string) (pd PlaceDetails, err error) {
+	coords := "lat=" + lat + "&lon=" + lon
+	url := GEOAPIFY_SITE + placeDetailsV2 + coords + "&lang=es"
+	fmt.Println(url)
+	url += "&apiKey=" + apiKey
+
+	status, body, err := getJSON(url)
+	if err != nil || status != 200 {
+		fmt.Println(err)
+		return PlaceDetails{}, err
+	}
+	pd, err = parsePlaceDetails(body)
+	return pd, err
+}
+
+func parsePlaceDetails(body []byte) (pd PlaceDetails, err error) {
+	pd = PlaceDetails{}
 
 	var parsed any
 	err = json.Unmarshal(body, &parsed)
@@ -30,6 +49,8 @@ func GetPlaceDetailsById(params string) (PlaceDetails, error) {
 	parsed_map, ok := fc_parsed["features"].([]any)[0].(map[string]any)["properties"].(map[string]any)
 	parseFailed = parseFailed || !ok
 
+	pd.PlaceID, ok = parsed_map["place_id"].(string)
+	parseFailed = parseFailed || !ok
 	pd.Name, ok = parsed_map["name"].(string)
 	parseFailed = parseFailed || !ok
 	pd.Address, ok = parsed_map["formatted"].(string)
@@ -71,5 +92,5 @@ func GetPlaceDetailsById(params string) (PlaceDetails, error) {
 		err = fmt.Errorf("failed to parse place details")
 		return PlaceDetails{}, err
 	}
-	return pd, nil
+	return pd, err
 }
