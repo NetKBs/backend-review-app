@@ -10,7 +10,7 @@ const placeDetailsV2 = "/v2/place-details?"
 const pDV2ByID = "id="
 
 func GetPlaceDetailsById(params string) (PlaceDetails, error) {
-	url := GEOAPIFY_SITE + placeDetailsV2 + pDV2ByID + params
+	url := GEOAPIFY_SITE + placeDetailsV2 + pDV2ByID + params + "&lang=es"
 	url += "&apiKey=" + apiKey
 
 	status, body, err := getJSON(url)
