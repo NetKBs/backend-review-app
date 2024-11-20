@@ -10,7 +10,7 @@ const placeDetailsV2 = "/v2/place-details?"
 const pDV2ByID = "id="
 
 func GetPlaceDetailsById(params string) (PlaceDetails, error) {
-	url := GEOAPIFY_SITE + placeDetailsV2 + pDV2ByID + params
+	url := GEOAPIFY_SITE + placeDetailsV2 + pDV2ByID + params + "&lang=es"
 	url += "&apiKey=" + apiKey
 
 	status, body, err := getJSON(url)
@@ -52,12 +52,19 @@ func GetPlaceDetailsById(params string) (PlaceDetails, error) {
 	pd.Latitude, ok = parsed_map["lat"].(float64)
 	parseFailed = parseFailed || !ok
 
+	orNil := func(v any) (*string, bool) {
+		result, ok := v.(string)
+		if result == "" {
+			return nil, ok
+		}
+		return &result, ok
+	}
 	raw_datasource, ok := parsed_map["datasource"].(map[string]any)["raw"].(map[string]any)
 	contacts := PlaceContacts{}
-	contacts.Mobile, ok = raw_datasource["phone"].(string)
-	contacts.Twitter, ok = raw_datasource["contact:twitter"].(string)
-	contacts.Facebook, ok = raw_datasource["contact:facebook"].(string)
-	contacts.Instagram, ok = raw_datasource["contact:instagram"].(string)
+	contacts.Mobile, ok = orNil(raw_datasource["phone"])
+	contacts.Twitter, ok = orNil(raw_datasource["contact:twitter"])
+	contacts.Facebook, ok = orNil(raw_datasource["contact:facebook"])
+	contacts.Instagram, ok = orNil(raw_datasource["contact:instagram"])
 	pd.Contacts = contacts
 
 	if parseFailed {

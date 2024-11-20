@@ -10,8 +10,8 @@ type PlaceDetails struct {
 }
 
 type PlaceContacts struct {
-	Mobile    string `json:"mobile"`
-	Facebook  string `json:"facebook"`
-	Twitter   string `json:"twitter"`
-	Instagram string `json:"instagram"`
+	Mobile    *string `json:"mobile",omitempty`
+	Facebook  *string `json:"facebook",omitempty`
+	Twitter   *string `json:"twitter",omitempty`
+	Instagram *string `json:"instagram",omitempty`
 }
