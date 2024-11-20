@@ -19,7 +19,8 @@ func getPlaceController(c *gin.Context) {
 		})
 	}
 
+	data := []PlaceDetailsResponseDTO{placeDetailsDTO}
 	c.JSON(http.StatusOK, gin.H{
-		"data": placeDetailsDTO,
+		"data": data,
 	})
 }
