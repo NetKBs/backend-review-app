@@ -49,7 +49,7 @@ func parsePlaceDetails(body []byte) (pd PlaceDetails, err error) {
 	parsed_map, ok := fc_parsed["features"].([]any)[0].(map[string]any)["properties"].(map[string]any)
 	parseFailed = parseFailed || !ok
 
-	pd.PlaceID, ok = parsed_map["place_id"].(string)
+	pd.MapsID, ok = parsed_map["place_id"].(string)
 	parseFailed = parseFailed || !ok
 	pd.Name, ok = parsed_map["name"].(string)
 	parseFailed = parseFailed || !ok
@@ -83,6 +83,8 @@ func parsePlaceDetails(body []byte) (pd PlaceDetails, err error) {
 	raw_datasource, ok := parsed_map["datasource"].(map[string]any)["raw"].(map[string]any)
 	contacts := PlaceContacts{}
 	contacts.Mobile, ok = orNil(raw_datasource["phone"])
+	contacts.Website, ok = orNil(raw_datasource["website"])
+	contacts.Email, ok = orNil(raw_datasource["email"])
 	contacts.Twitter, ok = orNil(raw_datasource["contact:twitter"])
 	contacts.Facebook, ok = orNil(raw_datasource["contact:facebook"])
 	contacts.Instagram, ok = orNil(raw_datasource["contact:instagram"])
