@@ -30,7 +30,7 @@ func GetPlaceDetailsByCoordsService(ctx context.Context, lat string, lon string)
 	if err != nil {
 		return placeDetailsDTO, err
 	}
-	place, err := findPlaceByMapsIdRepo(placeDetails.PlaceID)
+	place, err := findPlaceByMapsIdRepo(placeDetails.MapsID)
 	if err != nil {
 		return placeDetailsDTO, err
 	}
