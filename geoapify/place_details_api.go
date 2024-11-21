@@ -83,6 +83,8 @@ func parsePlaceDetails(body []byte) (pd PlaceDetails, err error) {
 	raw_datasource, ok := parsed_map["datasource"].(map[string]any)["raw"].(map[string]any)
 	contacts := PlaceContacts{}
 	contacts.Mobile, ok = orNil(raw_datasource["phone"])
+	contacts.Website, ok = orNil(raw_datasource["website"])
+	contacts.Email, ok = orNil(raw_datasource["email"])
 	contacts.Twitter, ok = orNil(raw_datasource["contact:twitter"])
 	contacts.Facebook, ok = orNil(raw_datasource["contact:facebook"])
 	contacts.Instagram, ok = orNil(raw_datasource["contact:instagram"])
