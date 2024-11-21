@@ -82,18 +82,18 @@ func CreateUserController(c *gin.Context) {
 
 func DeleteUserbyIdController(c *gin.Context) {
 	id := c.Param("id")
-	/*revId*/ _, err := strconv.ParseUint(id, 10, 64)
+	revId, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
-	//err = DeleteUserByIdService(uint(revId))
+	err = DeleteUserByIdService(uint(revId))
 
-	/*if err != nil {
+	if err != nil {
 		status, errorMessage := handleExceptions(err)
 		c.JSON(status, gin.H{"error": errorMessage})
 		return
-	}*/
+	}
 
 	c.Status(http.StatusOK)
 }
