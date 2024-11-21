@@ -29,3 +29,5 @@ go.work.sum
 
 # Funcitionality proves  
 /Pruebas
+# Air config file
+.air.toml

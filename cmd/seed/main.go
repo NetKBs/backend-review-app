@@ -25,9 +25,9 @@ func seedDabase(db *gorm.DB) error {
 	var error error
 
 	// Users
-	user1 := schema.User{Username: "john_doe", DisplayName: "John Doe", Email: "john@example.com", Password: "securepassword"}
-	user2 := schema.User{Username: "jane_smith", DisplayName: "Jane Smith", Email: "jane@example.com", Password: "anothersecurepassword"}
-	user3 := schema.User{Username: "alice_jones", DisplayName: "Alice Jones", Email: "alice@example.com", Password: "yetanotherpassword"}
+	user1 := schema.User{Username: "john_doe", DisplayName: "John Doe", Email: "john@example.com", Password: "$2b$12$J58YbY6/BR1Yp9q10Oo8CenagCk8x82bYpFT7Mln5EDBIqg9jKLka"}        // securepassword
+	user2 := schema.User{Username: "jane_smith", DisplayName: "Jane Smith", Email: "jane@example.com", Password: "$2b$12$y80zcyy1Wbgm1qubNb8XS.nreAUlW8BlTFL9tjg647cK8AKzrTV.G"}    // anothersecurepassword
+	user3 := schema.User{Username: "alice_jones", DisplayName: "Alice Jones", Email: "alice@example.com", Password: "$2b$12$3qMGteGg5D4se/kOkvM/2Oi5RutIN3apgbQ9AGsmT/GXO3Rgxx26G"} // yetanotherpassword
 	users := []*schema.User{&user1, &user2, &user3}
 	if error = db.Create(&users).Error; error != nil {
 		return error
