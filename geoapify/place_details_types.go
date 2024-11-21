@@ -1,7 +1,7 @@
 package geoapify
 
 type PlaceDetails struct {
-	PlaceID   string        `json:"place_id"`
+	MapsID    string        `json:"maps_id"`
 	Name      string        `json:"name"`
 	Category  string        `json:"category"`
 	Address   string        `json:"address"`

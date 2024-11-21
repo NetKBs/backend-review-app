@@ -49,7 +49,7 @@ func parsePlaceDetails(body []byte) (pd PlaceDetails, err error) {
 	parsed_map, ok := fc_parsed["features"].([]any)[0].(map[string]any)["properties"].(map[string]any)
 	parseFailed = parseFailed || !ok
 
-	pd.PlaceID, ok = parsed_map["place_id"].(string)
+	pd.MapsID, ok = parsed_map["place_id"].(string)
 	parseFailed = parseFailed || !ok
 	pd.Name, ok = parsed_map["name"].(string)
 	parseFailed = parseFailed || !ok
