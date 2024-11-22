@@ -1,15 +1,35 @@
 package user
 
 import (
-	"time"
-
 	"github.com/NetKBs/backend-reviewapp/src/schema"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func DeleteUserByIdService(id uint) error {
-	err := DeleteUserbyIDRepository(id)
-	return err
+func CreateUserService(userDTO UserRequestDTO, password string) (UserResponseDTO, error) {
+
+	hashedPassword, err := bcryptHash(password)
+	if err != nil {
+		return UserResponseDTO{}, err
+	}
+
+	user := schema.User{
+		Username:    userDTO.Username,
+		AvatarUrl:   &userDTO.AvatarUrl,
+		DisplayName: userDTO.DisplayName,
+		Email:       userDTO.Email,
+		Password:    hashedPassword,
+	}
+
+	err = CreateUserRepository(&user)
+
+	return UserResponseDTO{
+		ID:          user.ID,
+		Username:    user.Username,
+		AvatarUrl:   *user.AvatarUrl,
+		DisplayName: user.DisplayName,
+		Email:       user.Email,
+	}, err
+
 }
 
 func GetUserByIdService(id uint) (userDTO UserResponseDTO, err error) {
@@ -25,10 +45,6 @@ func GetUserByIdService(id uint) (userDTO UserResponseDTO, err error) {
 		AvatarUrl:   getStringPointer(user.AvatarUrl),
 		DisplayName: user.DisplayName,
 		Email:       user.Email,
-		Password:    user.Password,
-		CreatedAt:   user.CreatedAt.String(), //Preguntar
-		UpdatedAt:   user.UpdatedAt.String(),
-		DeletedAt:   user.DeletedAt.Time.Format(time.RFC3339),
 	}
 
 	return userDTO, nil
@@ -39,38 +55,6 @@ func getStringPointer(ptr *string) string {
 		return ""
 	}
 	return *ptr
-}
-
-func CreateUserService(userDTO UserResponseDTO) (UserResponseDTO, error) {
-
-	hashedPassword, err := bcryptHash(userDTO.Password)
-	if err != nil {
-		return UserResponseDTO{}, err
-	}
-	// Create the user struct
-	user := schema.User{
-		Username:    userDTO.Username,
-		AvatarUrl:   &userDTO.AvatarUrl,
-		DisplayName: userDTO.DisplayName,
-		Email:       userDTO.Email,
-		Password:    hashedPassword,
-	}
-
-	err = CreateUserRepository(&user)
-
-	//Convert time.Time to string for the response
-	return UserResponseDTO{
-		ID:          user.ID,
-		Username:    user.Username,
-		AvatarUrl:   *user.AvatarUrl,
-		DisplayName: user.DisplayName,
-		Email:       user.Email,
-		Password:    user.Password,
-		CreatedAt:   user.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:   user.UpdatedAt.Format(time.RFC3339),
-		DeletedAt:   user.DeletedAt.Time.Format(time.RFC3339),
-	}, err
-
 }
 
 func UpdateUserService(newUser UserResponseDTO) error {
@@ -87,7 +71,6 @@ func UpdateUserService(newUser UserResponseDTO) error {
 }
 
 func handleChanges(user *schema.User, newUser *UserResponseDTO) error {
-	var hashedPassword string
 	var err error
 	if newUser.Username != "" {
 		user.Username = newUser.Username
@@ -101,10 +84,17 @@ func handleChanges(user *schema.User, newUser *UserResponseDTO) error {
 	if newUser.Email != "" {
 		user.Email = newUser.Email
 	}
-	if newUser.Password != "" {
-		hashedPassword, err = bcryptHash(newUser.Password)
-		user.Password = hashedPassword
+	return err
+}
+
+func UpdatePasswordUserService(id uint, password string) error {
+	hashedPassword, err := bcryptHash(password)
+
+	if err != nil {
+		return err
 	}
+	err = UpdatePasswordUserRepository(id, hashedPassword)
+
 	return err
 }
 
@@ -112,4 +102,9 @@ func bcryptHash(password string) (string, error) {
 	bytePassword := []byte(password)
 	hash, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost) //DefaultCost es 10
 	return string(hash), err
+}
+
+func DeleteUserByIdService(id uint) error {
+	err := DeleteUserbyIDRepository(id)
+	return err
 }

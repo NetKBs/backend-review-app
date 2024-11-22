@@ -26,7 +26,6 @@ func init() {
 func main() {
 	r := gin.Default()
 	r.Use(cors.Default())
-	//r.GET("/user/:id", user.GetUserByIdController)
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
