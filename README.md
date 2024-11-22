@@ -28,7 +28,7 @@
 
 Para ejecutar este proyecto, necesitarás agregar las siguientes variables de entorno en tu `.env` en la raíz del proyecto:
 
-* `PORT_SERVER`: Puerto en el que se ejecutará el servidor.
+* `PORT`: Puerto en el que se ejecutará el servidor.
 * `TURSO_DATABASE_URL` *(opcional)*: URL de la base de datos de TURSO.
 * `TURSO_AUTH_TOKEN` *(opcional)*: Token de autenticación para la base de datos de TURSO.
 * `GEOAPIFY_KEY`: Key del mapa
