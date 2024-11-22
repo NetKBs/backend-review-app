@@ -5,9 +5,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func CreateUserService(userDTO UserRequestDTO, password string) (UserResponseDTO, error) {
+func CreateUserService(userDTO UserRequestDTO) (UserResponseDTO, error) {
 
-	hashedPassword, err := bcryptHash(password)
+	hashedPassword, err := bcryptHash(userDTO.Password)
 	if err != nil {
 		return UserResponseDTO{}, err
 	}

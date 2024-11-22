@@ -11,9 +11,6 @@ import (
 
 func CreateUserController(c *gin.Context) {
 	var userDTO UserRequestDTO
-	var passwordStruct struct {
-		Password string `json:"password"`
-	}
 
 	if err := c.ShouldBindJSON(&userDTO); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -25,7 +22,7 @@ func CreateUserController(c *gin.Context) {
 		return
 	}
 
-	newUser, err := CreateUserService(userDTO, passwordStruct.Password)
+	newUser, err := CreateUserService(userDTO)
 
 	if err != nil {
 		status, errorMessage := handleExceptions(err)
@@ -33,7 +30,11 @@ func CreateUserController(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"User": newUser})
+	data := []UserResponseDTO{newUser}
+	c.JSON(http.StatusOK, gin.H{
+		"data": data,
+	})
+
 }
 
 func GetUserByIdController(c *gin.Context) {
@@ -50,8 +51,10 @@ func GetUserByIdController(c *gin.Context) {
 		c.JSON(status, gin.H{"error": errorMessage, "id": revId})
 		return
 	}
-
-	c.JSON(http.StatusOK, gin.H{"User": user})
+	data := []UserResponseDTO{user}
+	c.JSON(http.StatusOK, gin.H{
+		"data": data,
+	})
 }
 
 func handleExceptions(err error) (int, string) {
@@ -80,7 +83,10 @@ func UpdateUserController(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"User": newUser})
+	data := []UserResponseDTO{newUser}
+	c.JSON(http.StatusOK, gin.H{
+		"data": data,
+	})
 }
 
 func UpdatePasswordController(c *gin.Context) {
@@ -107,6 +113,10 @@ func UpdatePasswordController(c *gin.Context) {
 		c.JSON(status, gin.H{"error": errorMessage})
 		return
 	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Contraseña cambiada exitosamente",
+	})
 }
 
 func DeleteUserbyIdController(c *gin.Context) {
@@ -124,5 +134,7 @@ func DeleteUserbyIdController(c *gin.Context) {
 		return
 	}
 
-	c.Status(http.StatusOK)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Usuario eliminado Exitosamente",
+	})
 }
