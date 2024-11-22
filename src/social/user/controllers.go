@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gin-gonic/gin" //Preguntar
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
@@ -108,30 +108,6 @@ func UpdatePasswordController(c *gin.Context) {
 		return
 	}
 }
-
-/*func CreateUserController(c *gin.Context) {
-	var userDTO UserResponseDTO
-
-	if err := c.ShouldBindJSON(&userDTO); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if userDTO.Username == "" || userDTO.Email == "" || userDTO.Password == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "username, email, and password are required"})
-		return
-	}
-
-	newUser, err := CreateUserService(userDTO)
-
-	if err != nil {
-		status, errorMessage := handleExceptions(err)
-		c.JSON(status, gin.H{"error": errorMessage})
-		return
-	}
-
-	c.JSON(http.StatusCreated, gin.H{"User": newUser})
-}*/
 
 func DeleteUserbyIdController(c *gin.Context) {
 	id := c.Param("id")

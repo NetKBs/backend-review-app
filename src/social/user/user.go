@@ -6,7 +6,6 @@ type UserResponseDTO struct {
 	AvatarUrl   string `json:"avatar_url"`
 	DisplayName string `json:"display_name"`
 	Email       string `json:"email"`
-	//Password    string `json:"password"`
 }
 
 type UserRequestDTO struct {
