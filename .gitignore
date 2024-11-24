@@ -27,5 +27,7 @@ go.work.sum
 # Images Folder
 /images
 
+# Funcitionality proves  
+/Pruebas
 # Air config file
 .air.toml

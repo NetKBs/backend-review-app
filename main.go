@@ -12,6 +12,7 @@ import (
 	"github.com/NetKBs/backend-reviewapp/src/social/comment"
 	"github.com/NetKBs/backend-reviewapp/src/social/place"
 	"github.com/NetKBs/backend-reviewapp/src/social/review"
+	"github.com/NetKBs/backend-reviewapp/src/social/user"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -26,7 +27,6 @@ func init() {
 func main() {
 	r := gin.Default()
 	r.Use(cors.Default())
-
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
@@ -38,7 +38,7 @@ func main() {
 	review.RegisterRoutes(r)
 	auth.RegisterRoutes(r)
 	place.RegisterRoutes(r)
+	user.RegisterRoutes(r)
 	comment.RegisterRoutes(r)
-
 	r.Run()
 }
