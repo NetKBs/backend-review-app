@@ -29,61 +29,62 @@ func main() {
 func seedDatabase(db *gorm.DB) (error error) {
 	gofakeit.Seed(777)
 
-	usersId, error := seedUsers(db)
-	if error != nil {
-		return error
-	}
+	/*
+		usersId, error := seedUsers(db)
+		if error != nil {
+			return error
+		}
 
-	placesId, error := seedPlaces(db)
-	if error != nil {
-		return error
-	}
+			placesId, error := seedPlaces(db)
+			if error != nil {
+				return error
+			}
 
-	reviewsId, error := seedReviews(db, usersId, placesId)
-	if error != nil {
-		return error
-	}
+			reviewsId, error := seedReviews(db, usersId, placesId)
+			if error != nil {
+				return error
+			}
 
-	commentsId, error := seedComments(db, usersId, reviewsId)
-	if error != nil {
-		return error
-	}
+			commentsId, error := seedComments(db, usersId, reviewsId)
+			if error != nil {
+				return error
+			}
 
-	answersId, error := seedAnswers(db, usersId, commentsId)
-	if error != nil {
-		return error
-	}
+			answersId, error := seedAnswers(db, usersId, commentsId)
+			if error != nil {
+				return error
+			}
 
-	error = seedReviewImages(db, reviewsId)
-	if error != nil {
-		return error
-	}
+			error = seedReviewImages(db, reviewsId)
+			if error != nil {
+				return error
+			}
 
-	error = seedNotifications(db, usersId)
-	if error != nil {
-		return error
-	}
+			error = seedNotifications(db, usersId)
+			if error != nil {
+				return error
+			}
 
-	error = seedReactions(db, usersId, reviewsId, commentsId, answersId)
-	if error != nil {
-		return error
-	}
+			error = seedReactions(db, usersId, reviewsId, commentsId, answersId)
+			if error != nil {
+				return error
+			}
 
-	error = seedVisitedPlaces(db, usersId, placesId)
-	if error != nil {
-		return error
-	}
+			error = seedVisitedPlaces(db, usersId, placesId)
+			if error != nil {
+				return error
+			}
 
-	error = seedFollowersAndFollowings(db, usersId)
-	if error != nil {
-		return error
-	}
+			error = seedFollowersAndFollowings(db, usersId)
+			if error != nil {
+				return error
+			}
 
-	error = seedBookmarks(db, usersId, placesId)
-	if error != nil {
-		return error
-	}
-
+			error = seedBookmarks(db, usersId, placesId)
+			if error != nil {
+				return error
+			}
+	*/
 	return nil
 }
 
@@ -144,6 +145,7 @@ func seedPlaces(db *gorm.DB) (placesId []uint, error error) {
 	return placesId, nil
 }
 
+/*
 func seedReviews(db *gorm.DB, placesId []uint, usersId []uint) (reviewsId []uint, error error) {
 
 	for i := 0; i < 30; i++ {
@@ -372,3 +374,4 @@ func seedBookmarks(db *gorm.DB, usersId []uint, placesId []uint) (err error) {
 
 	return nil
 }
+*/
