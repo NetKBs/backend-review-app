@@ -2,9 +2,9 @@ package comment
 
 import "github.com/NetKBs/backend-reviewapp/src/schema"
 
-func GetCommentsCountService(id uint) (commentsCount uint, err error) {
+func GetCommentsReviewCountService(id uint) (commentsCount uint, err error) {
 
-	commentsCount, err = GetCommentsCountRepository(id)
+	commentsCount, err = GetCommentsReviewCountRepository(id)
 	if err != nil {
 		return commentsCount, err
 	}

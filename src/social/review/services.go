@@ -19,7 +19,7 @@ func GetReviewByIdService(id uint) (reviewDTO ReviewResponseDTO, err error) {
 		return reviewDTO, err
 	}
 
-	commentsCount, err := comment.GetCommentsCountService(id)
+	commentsCount, err := comment.GetCommentsReviewCountService(id)
 	if err != nil {
 		return reviewDTO, err
 	}
