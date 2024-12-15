@@ -6,10 +6,10 @@ import (
 
 type User struct {
 	gorm.Model
-	Username         string
+	Username         string `gorm:"unique"`
 	AvatarUrl        *string
 	DisplayName      string
-	Email            string
+	Email            string `gorm:"unique"`
 	Password         string
 	Reviews          []Review       `gorm:"foreignKey:UserId"`
 	Comments         []Comment      `gorm:"foreignKey:UserId"`
