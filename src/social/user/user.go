@@ -23,3 +23,8 @@ type UserCreateDTO struct {
 	Email       string                `form:"email" binding:"required"`
 	Password    string                `form:"password" binding:"required"`
 }
+
+type UpdatePasswordDTO struct {
+	OldPassword string `json:"old_password" binding:"required"`
+	NewPassword string `json:"new_password" binding:"required"`
+}

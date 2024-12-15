@@ -21,7 +21,7 @@ func handleExceptions(err error) (int, string) {
 	}
 }
 
-func VerifyUsernameController(c *gin.Context) {
+func VerifyUsernameUserController(c *gin.Context) {
 	username := c.Param("username")
 	exists, _ := VerifyUsernameService(username)
 	c.JSON(http.StatusOK, gin.H{
@@ -65,13 +65,13 @@ func CreateUserController(c *gin.Context) {
 
 func GetUserByIdController(c *gin.Context) {
 	id := c.Param("id")
-	revId, err := strconv.ParseUint(id, 10, 64)
+	userId, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
 
-	user, err := GetUserByIdService(uint(revId))
+	user, err := GetUserByIdService(uint(userId))
 	if err != nil {
 		status, errorMessage := handleExceptions(err)
 		c.JSON(status, gin.H{"error": errorMessage})
@@ -83,6 +83,7 @@ func GetUserByIdController(c *gin.Context) {
 	})
 }
 
+/*
 func UpdateUserController(c *gin.Context) {
 
 	var newUser UserResponseDTO
@@ -104,35 +105,30 @@ func UpdateUserController(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"data": data,
 	})
-}
+}*/
 
 func UpdatePasswordController(c *gin.Context) {
 	id := c.Param("id")
-	revId, err := strconv.ParseUint(id, 10, 64)
+	userId, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
 
-	var passwordStruct struct {
-		Password string `json:"password"`
-	}
-
-	if err := c.ShouldBindJSON(passwordStruct); err != nil || passwordStruct.Password == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "password is required"})
+	var passwordDTO UpdatePasswordDTO
+	if err := c.ShouldBindJSON(&passwordDTO); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = UpdatePasswordUserService(uint(revId), passwordStruct.Password)
-
-	if err != nil {
+	if err := UpdatePasswordUserService(uint(userId), passwordDTO); err != nil {
 		status, errorMessage := handleExceptions(err)
 		c.JSON(status, gin.H{"error": errorMessage})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Contraseña cambiada exitosamente",
+		"message": "Password updated successfully",
 	})
 }
 

@@ -1,6 +1,8 @@
 package user
 
 import (
+	"errors"
+
 	"github.com/NetKBs/backend-reviewapp/src/schema"
 	"github.com/NetKBs/backend-reviewapp/src/social/bookmark"
 	"github.com/NetKBs/backend-reviewapp/src/social/follow"
@@ -9,12 +11,17 @@ import (
 )
 
 func VerifyUsernameService(username string) (exists bool, err error) {
-	return VerifyUsernameRepository(username)
+
+	_, err = GetUsernameUserRepository(username)
+	if err != nil {
+		return false, err
+	}
+	return true, err
 }
 
 func CreateUserService(userDTO UserCreateDTO, avatarPath string) (uint, error) {
 
-	hashedPassword, err := bcryptHash(userDTO.Password)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userDTO.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return 0, err
 	}
@@ -24,7 +31,7 @@ func CreateUserService(userDTO UserCreateDTO, avatarPath string) (uint, error) {
 		AvatarUrl:   &avatarPath,
 		DisplayName: userDTO.DisplayName,
 		Email:       userDTO.Email,
-		Password:    hashedPassword,
+		Password:    string(hashedPassword),
 	}
 
 	id, err := CreateUserRepository(user)
@@ -83,51 +90,21 @@ func getStringPointer(ptr *string) string {
 	return *ptr
 }
 
-func UpdateUserService(newUser UserResponseDTO) error {
-
-	user, err := GetUserByIdRepository(uint(newUser.ID))
+func UpdatePasswordUserService(id uint, password UpdatePasswordDTO) error {
+	dbPassword, err := GetPasswordUserRepository(id)
 	if err != nil {
 		return err
 	}
-
-	handleChanges(&user, &newUser)
-	err = UpdateUserRepository(&user)
-
-	return err
-}
-
-func handleChanges(user *schema.User, newUser *UserResponseDTO) error {
-	var err error
-	if newUser.Username != "" {
-		user.Username = newUser.Username
+	if err := bcrypt.CompareHashAndPassword([]byte(dbPassword), []byte(password.OldPassword)); err != nil {
+		return errors.New("invalid old password")
 	}
-	if newUser.AvatarUrl != "" {
-		user.AvatarUrl = &newUser.AvatarUrl
-	}
-	if newUser.DisplayName != "" {
-		user.DisplayName = newUser.DisplayName
-	}
-	if newUser.Email != "" {
-		user.Email = newUser.Email
-	}
-	return err
-}
 
-func UpdatePasswordUserService(id uint, password string) error {
-	hashedPassword, err := bcryptHash(password)
-
+	hashedNewPassword, err := bcrypt.GenerateFromPassword([]byte(password.NewPassword), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
-	err = UpdatePasswordUserRepository(id, hashedPassword)
-
+	err = UpdatePasswordUserRepository(id, string(hashedNewPassword))
 	return err
-}
-
-func bcryptHash(password string) (string, error) {
-	bytePassword := []byte(password)
-	hash, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost) //DefaultCost es 10
-	return string(hash), err
 }
 
 func DeleteUserByIdService(id uint) error {

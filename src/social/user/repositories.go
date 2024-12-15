@@ -5,13 +5,35 @@ import (
 	"github.com/NetKBs/backend-reviewapp/src/schema"
 )
 
-func VerifyUsernameRepository(username string) (bool, error) {
+func GetUsernameUserRepository(username string) (string, error) {
 	db := config.DB
 	var user schema.User
 	if err := db.Where("username = ?", username).First(&user).Error; err != nil {
-		return false, err
+		return user.Username, err
 	}
-	return true, nil
+	return user.Username, nil
+}
+
+func GetPasswordUserRepository(id uint) (string, error) {
+	db := config.DB
+	var dbPassword string
+
+	if err := db.Where("id = ?", id).First(&schema.User{}).Error; err != nil {
+		return "", err
+	}
+
+	if err := db.Model(&schema.User{}).Where("id = ?", id).Pluck("password", &dbPassword).Error; err != nil {
+		return "", err
+	}
+	return dbPassword, nil
+}
+
+func UpdatePasswordUserRepository(id uint, newPassword string) error {
+	db := config.DB
+	if err := db.Model(&schema.User{}).Where("id = ?", id).Update("password", newPassword).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 func CreateUserRepository(user schema.User) (uint, error) {
@@ -72,34 +94,4 @@ func DeleteUserbyIDRepository(id uint) error {
 
 	// Confirmar transacción
 	return tx.Commit().Error
-}
-
-func UpdatePasswordUserRepository(id uint, password string) error {
-	db := config.DB
-
-	tx := db.Begin()
-
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
-
-	var user schema.User
-	if err := tx.First(&user, id).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	user.Password = password
-	if err := tx.Save(&user).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	if err := tx.Commit().Error; err != nil {
-		return err
-	}
-
-	return nil
 }
