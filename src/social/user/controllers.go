@@ -21,6 +21,14 @@ func handleExceptions(err error) (int, string) {
 	}
 }
 
+func VerifyUsernameController(c *gin.Context) {
+	username := c.Param("username")
+	exists, _ := VerifyUsernameService(username)
+	c.JSON(http.StatusOK, gin.H{
+		"exists": exists,
+	})
+}
+
 func CreateUserController(c *gin.Context) {
 	var userDTO UserCreateDTO
 	if err := c.ShouldBind(&userDTO); err != nil {

@@ -5,6 +5,15 @@ import (
 	"github.com/NetKBs/backend-reviewapp/src/schema"
 )
 
+func VerifyUsernameRepository(username string) (bool, error) {
+	db := config.DB
+	var user schema.User
+	if err := db.Where("username = ?", username).First(&user).Error; err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
 func CreateUserRepository(user schema.User) (uint, error) {
 	db := config.DB
 	if err := db.Create(&user).Error; err != nil {

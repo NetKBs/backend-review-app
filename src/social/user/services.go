@@ -8,6 +8,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+func VerifyUsernameService(username string) (exists bool, err error) {
+	return VerifyUsernameRepository(username)
+}
+
 func CreateUserService(userDTO UserCreateDTO, avatarPath string) (uint, error) {
 
 	hashedPassword, err := bcryptHash(userDTO.Password)
