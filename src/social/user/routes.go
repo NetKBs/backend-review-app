@@ -3,7 +3,7 @@ package user
 import "github.com/gin-gonic/gin"
 
 func RegisterRoutes(router *gin.Engine) {
-	users := router.Group("/user")
+	users := router.Group("/users")
 	{
 		users.GET("/:id", GetUserByIdController)       // Obtener un usuario por ID (Read)
 		users.POST("/", CreateUserController)          // Crear un nuevo usuario (Create)

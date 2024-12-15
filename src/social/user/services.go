@@ -2,34 +2,33 @@ package user
 
 import (
 	"github.com/NetKBs/backend-reviewapp/src/schema"
+	"github.com/NetKBs/backend-reviewapp/src/social/bookmark"
+	"github.com/NetKBs/backend-reviewapp/src/social/follow"
+	"github.com/NetKBs/backend-reviewapp/src/social/visited"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func CreateUserService(userDTO UserRequestDTO) (UserResponseDTO, error) {
+func CreateUserService(userDTO UserCreateDTO, avatarPath string) (uint, error) {
 
 	hashedPassword, err := bcryptHash(userDTO.Password)
 	if err != nil {
-		return UserResponseDTO{}, err
+		return 0, err
 	}
 
 	user := schema.User{
 		Username:    userDTO.Username,
-		AvatarUrl:   &userDTO.AvatarUrl,
+		AvatarUrl:   &avatarPath,
 		DisplayName: userDTO.DisplayName,
 		Email:       userDTO.Email,
 		Password:    hashedPassword,
 	}
 
-	err = CreateUserRepository(&user)
+	id, err := CreateUserRepository(user)
+	if err != nil {
+		return 0, err
+	}
 
-	return UserResponseDTO{
-		ID:          user.ID,
-		Username:    user.Username,
-		AvatarUrl:   *user.AvatarUrl,
-		DisplayName: user.DisplayName,
-		Email:       user.Email,
-	}, err
-
+	return id, nil
 }
 
 func GetUserByIdService(id uint) (userDTO UserResponseDTO, err error) {
@@ -39,12 +38,35 @@ func GetUserByIdService(id uint) (userDTO UserResponseDTO, err error) {
 		return userDTO, err
 	}
 
+	followersCount, err := follow.GetFollowersCountService(id)
+	if err != nil {
+		return userDTO, err
+	}
+	followingCount, err := follow.GetFollowingCountService(id)
+	if err != nil {
+		return userDTO, err
+	}
+	bookmarkCount, err := bookmark.GetBookmarkCount(id)
+	if err != nil {
+		return userDTO, err
+	}
+	visitedCount, err := visited.GetVisitedCount(id)
+	if err != nil {
+		return userDTO, err
+	}
+
 	userDTO = UserResponseDTO{
-		ID:          user.ID,
-		Username:    user.Username,
-		AvatarUrl:   getStringPointer(user.AvatarUrl),
-		DisplayName: user.DisplayName,
-		Email:       user.Email,
+		ID:            user.ID,
+		Username:      user.Username,
+		AvatarUrl:     getStringPointer(user.AvatarUrl),
+		DisplayName:   user.DisplayName,
+		Email:         user.Email,
+		Followers:     followersCount,
+		Following:     followingCount,
+		Bookmarks:     bookmarkCount,
+		VisitedPlaces: visitedCount,
+		CreatedAt:     user.CreatedAt.String(),
+		UpdatedAt:     user.UpdatedAt.String(),
 	}
 
 	return userDTO, nil

@@ -2,37 +2,55 @@ package user
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
+	"os/exec"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
-func CreateUserController(c *gin.Context) {
-	var userDTO UserRequestDTO
+func handleExceptions(err error) (int, string) {
+	switch {
+	case errors.Is(err, gorm.ErrRecordNotFound):
+		return http.StatusNotFound, "User not found"
+	default:
+		return http.StatusInternalServerError, err.Error()
+	}
+}
 
-	if err := c.ShouldBindJSON(&userDTO); err != nil {
+func CreateUserController(c *gin.Context) {
+	var userDTO UserCreateDTO
+	if err := c.ShouldBind(&userDTO); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if userDTO.Username == "" || userDTO.Email == "" || userDTO.Password == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "username and email are required"})
+	// avatar
+	newUUID, err := exec.Command("uuidgen").Output()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	newFilename := fmt.Sprintf("%s.png", strings.TrimSpace(string(newUUID)))
+
+	path := fmt.Sprintf("images/%s", newFilename)
+	if err := c.SaveUploadedFile(userDTO.AvatarImage, path); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	newUser, err := CreateUserService(userDTO)
-
+	newUser, err := CreateUserService(userDTO, path)
 	if err != nil {
 		status, errorMessage := handleExceptions(err)
 		c.JSON(status, gin.H{"error": errorMessage})
 		return
 	}
 
-	data := []UserResponseDTO{newUser}
 	c.JSON(http.StatusOK, gin.H{
-		"data": data,
+		"id": newUser,
 	})
 
 }
@@ -48,22 +66,13 @@ func GetUserByIdController(c *gin.Context) {
 	user, err := GetUserByIdService(uint(revId))
 	if err != nil {
 		status, errorMessage := handleExceptions(err)
-		c.JSON(status, gin.H{"error": errorMessage, "id": revId})
+		c.JSON(status, gin.H{"error": errorMessage})
 		return
 	}
-	data := []UserResponseDTO{user}
-	c.JSON(http.StatusOK, gin.H{
-		"data": data,
-	})
-}
 
-func handleExceptions(err error) (int, string) {
-	switch {
-	case errors.Is(err, gorm.ErrRecordNotFound):
-		return http.StatusNotFound, "User not found"
-	default:
-		return http.StatusInternalServerError, err.Error()
-	}
+	c.JSON(http.StatusOK, gin.H{
+		"data": user,
+	})
 }
 
 func UpdateUserController(c *gin.Context) {

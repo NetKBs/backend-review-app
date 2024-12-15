@@ -5,21 +5,12 @@ import (
 	"github.com/NetKBs/backend-reviewapp/src/schema"
 )
 
-func CreateUserRepository(user *schema.User) error {
+func CreateUserRepository(user schema.User) (uint, error) {
 	db := config.DB
-	tx := db.Begin()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
-
-	err := tx.Create(user).Error
-	if err != nil {
-		tx.Rollback()
+	if err := db.Create(&user).Error; err != nil {
+		return 0, err
 	}
-	tx.Commit()
-	return err
+	return user.ID, nil
 }
 
 func GetUserByIdRepository(id uint) (user schema.User, err error) {

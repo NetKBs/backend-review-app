@@ -237,10 +237,10 @@ func seedDatabase(db *gorm.DB) error {
 				return err
 			}
 
-			if err := db.Model(&user_model).Association("Followers").Append(&user_model2); err != nil {
+			if err := db.Model(&user_model).Association("Following").Append(&user_model2); err != nil {
 				return err
 			}
-			if err := db.Model(&user_model2).Association("Following").Append(&user_model); err != nil {
+			if err := db.Model(&user_model2).Association("Followers").Append(&user_model); err != nil {
 				return err
 			}
 		}

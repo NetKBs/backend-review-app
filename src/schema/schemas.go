@@ -16,8 +16,8 @@ type User struct {
 	Answers          []Answer       `gorm:"foreignKey:UserId"`
 	Reactions        []Reaction     `gorm:"foreignKey:UserId"`
 	Notifications    []Notification `gorm:"foreignKey:UserId"`
-	Followers        []User         `gorm:"many2many:follow;joinForeignKey:FollowerID;joinReferences:FollowedID"`
-	Following        []User         `gorm:"many2many:follow;joinForeignKey:FollowedID;joinReferences:FollowerID"`
+	Following        []User         `gorm:"many2many:follow;joinForeignKey:FollowerID;joinReferences:FollowedID"`
+	Followers        []User         `gorm:"many2many:follow;joinForeignKey:FollowedID;joinReferences:FollowerID"`
 	VisitedPlaces    []Place        `gorm:"many2many:place_visitors"`
 	BookmarkedPlaces []Place        `gorm:"many2many:bookmark"`
 }
