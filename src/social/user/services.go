@@ -90,7 +90,7 @@ func getStringPointer(ptr *string) string {
 	return *ptr
 }
 
-func UpdatePasswordUserService(id uint, password UpdatePasswordDTO) error {
+func UpdatePasswordUserService(id uint, password UserUpdatePasswordDTO) error {
 	dbPassword, err := GetPasswordUserRepository(id)
 	if err != nil {
 		return err
@@ -119,8 +119,12 @@ func UpdateAvatarUserService(id uint, newAvatarPath string) error {
 	return nil
 }
 
-func UpdateEmailUserService(id uint, email UpdateEmailDTO) error {
+func UpdateEmailUserService(id uint, email UserUpdateEmailDTO) error {
 	return UpdateEmailUserRepository(id, email.Email)
+}
+
+func UpdateUserService(id uint, userDTO UserUpdateDTO) error {
+	return UpdateUserRepository(id, userDTO)
 }
 
 func DeleteUserByIdService(id uint) error {

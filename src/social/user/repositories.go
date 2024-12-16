@@ -89,21 +89,17 @@ func GetUserByIdRepository(id uint) (user schema.User, err error) {
 	return user, nil
 }
 
-func UpdateUserRepository(user *schema.User) error {
+func UpdateUserRepository(id uint, userDTO UserUpdateDTO) error {
 	db := config.DB
-	tx := db.Begin()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
 
-	err := tx.Save(user).Error
-	if err != nil {
-		tx.Rollback()
+	if err := db.Where("id = ?", id).First(&schema.User{}).Error; err != nil {
+		return err
 	}
-	tx.Commit()
-	return err
+	if err := db.Model(&schema.User{}).Where("id = ?", id).Update("display_name", userDTO.DisplayName).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func DeleteUserbyIDRepository(id uint) error {

@@ -24,15 +24,19 @@ type UserCreateDTO struct {
 	Password    string                `form:"password" binding:"required"`
 }
 
-type UpdatePasswordDTO struct {
+type UserUpdatePasswordDTO struct {
 	OldPassword string `json:"old_password" binding:"required"`
 	NewPassword string `json:"new_password" binding:"required"`
 }
 
-type UpdateAvatarDTO struct {
+type UserUpdateAvatarDTO struct {
 	AvatarImage *multipart.FileHeader `form:"avatar_image" binding:"required"`
 }
 
-type UpdateEmailDTO struct {
+type UserUpdateEmailDTO struct {
 	Email string `json:"email" binding:"required"`
+}
+
+type UserUpdateDTO struct {
+	DisplayName string `json:"display_name" binding:"required"`
 }

@@ -95,7 +95,7 @@ func UpdatePasswordUserController(c *gin.Context) {
 		return
 	}
 
-	var passwordDTO UpdatePasswordDTO
+	var passwordDTO UserUpdatePasswordDTO
 	if err := c.ShouldBindJSON(&passwordDTO); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -130,7 +130,7 @@ func UpdateAvatarUserController(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 	}
 
-	var avatarDTO UpdateAvatarDTO
+	var avatarDTO UserUpdateAvatarDTO
 	if err := c.ShouldBind(&avatarDTO); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -169,7 +169,7 @@ func UpdateEmailUserController(c *gin.Context) {
 		return
 	}
 
-	var emailDTO UpdateEmailDTO
+	var emailDTO UserUpdateEmailDTO
 	if err := c.ShouldBindJSON(&emailDTO); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -183,6 +183,32 @@ func UpdateEmailUserController(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Email updated successfully",
+	})
+
+}
+
+func UpdateUserController(c *gin.Context) {
+	id := c.Param("id")
+	userId, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+
+	var userDTO UserUpdateDTO
+	if err := c.ShouldBindJSON(&userDTO); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := UpdateUserService(uint(userId), userDTO); err != nil {
+		status, errorMessage := handleExceptions(err)
+		c.JSON(status, gin.H{"error": errorMessage})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User updated successfully",
 	})
 
 }
