@@ -40,6 +40,13 @@ func CreateUserController(c *gin.Context) {
 		return
 	}
 
+	id, err := CreateUserService(userDTO)
+	if err != nil {
+		status, errorMessage := handleExceptions(err)
+		c.JSON(status, gin.H{"error": errorMessage})
+		return
+	}
+
 	// avatar
 	newUUID, err := exec.Command("uuidgen").Output()
 	if err != nil {
@@ -54,15 +61,13 @@ func CreateUserController(c *gin.Context) {
 		return
 	}
 
-	newUser, err := CreateUserService(userDTO, path)
-	if err != nil {
-		status, errorMessage := handleExceptions(err)
-		c.JSON(status, gin.H{"error": errorMessage})
+	if err := UpdateAvatarUserService(id, path); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"id": newUser,
+		"id": id,
 	})
 
 }
@@ -220,8 +225,8 @@ func DeleteUserbyIdController(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
-	err = DeleteUserByIdService(uint(revId))
 
+	err = DeleteUserByIdService(uint(revId))
 	if err != nil {
 		status, errorMessage := handleExceptions(err)
 		c.JSON(status, gin.H{"error": errorMessage})

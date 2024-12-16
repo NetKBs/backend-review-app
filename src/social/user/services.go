@@ -19,7 +19,7 @@ func UserExistsByIdService(id uint) (exists bool, err error) {
 	return UserExistsByIdRepository(id)
 }
 
-func CreateUserService(userDTO UserCreateDTO, avatarPath string) (uint, error) {
+func CreateUserService(userDTO UserCreateDTO) (uint, error) {
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userDTO.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -28,7 +28,6 @@ func CreateUserService(userDTO UserCreateDTO, avatarPath string) (uint, error) {
 
 	user := schema.User{
 		Username:    userDTO.Username,
-		AvatarUrl:   &avatarPath,
 		DisplayName: userDTO.DisplayName,
 		Email:       userDTO.Email,
 		Password:    string(hashedPassword),
@@ -112,8 +111,11 @@ func UpdateAvatarUserService(id uint, newAvatarPath string) error {
 	if err != nil {
 		return err
 	}
-	if err := image.DeleteImageByPathService(oldPath); err != nil {
-		return err
+
+	if oldPath != "" {
+		if err := image.DeleteImageByPathService(oldPath); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -128,6 +130,14 @@ func UpdateUserService(id uint, userDTO UserUpdateDTO) error {
 }
 
 func DeleteUserByIdService(id uint) error {
-	err := DeleteUserbyIDRepository(id)
-	return err
+	avatarPath, err := DeleteUserbyIDRepository(id)
+	if err != nil {
+		return err
+	}
+
+	if err := image.DeleteImageByPathService(avatarPath); err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -1,6 +1,8 @@
 package user
 
 import (
+	"database/sql"
+
 	"github.com/NetKBs/backend-reviewapp/config"
 	"github.com/NetKBs/backend-reviewapp/src/schema"
 )
@@ -47,7 +49,7 @@ func UpdatePasswordUserRepository(id uint, newPassword string) error {
 
 func UpdateAvatarUserRepository(id uint, avatarPath string) (string, error) {
 	db := config.DB
-	var oldAvatar string
+	var oldAvatar sql.NullString
 
 	if err := db.Model(&schema.User{}).Where("id = ?", id).Pluck("avatar_url", &oldAvatar).Error; err != nil {
 		return "", err
@@ -56,7 +58,10 @@ func UpdateAvatarUserRepository(id uint, avatarPath string) (string, error) {
 		return "", err
 	}
 
-	return oldAvatar, nil
+	if oldAvatar.Valid {
+		return oldAvatar.String, nil
+	}
+	return "", nil
 }
 
 func UpdateEmailUserRepository(id uint, email string) error {
@@ -102,27 +107,17 @@ func UpdateUserRepository(id uint, userDTO UserUpdateDTO) error {
 	return nil
 }
 
-func DeleteUserbyIDRepository(id uint) error {
+func DeleteUserbyIDRepository(id uint) (string, error) {
 	db := config.DB
-
-	tx := db.Begin()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
-
 	var user schema.User
-	if err := tx.Where("id = ?", id).First(&user).Error; err != nil {
-		tx.Rollback()
-		return err
+
+	if err := db.Where("id = ?", id).First(&user).Error; err != nil {
+		return "", err
 	}
 
-	if err := tx.Delete(&user).Error; err != nil {
-		tx.Rollback()
-		return err
+	if err := db.Where("id = ?", id).Delete(&user).Error; err != nil {
+		return "", err
 	}
 
-	// Confirmar transacción
-	return tx.Commit().Error
+	return *user.AvatarUrl, nil
 }
