@@ -119,6 +119,10 @@ func UpdateAvatarUserService(id uint, newAvatarPath string) error {
 	return nil
 }
 
+func UpdateEmailUserService(id uint, email UpdateEmailDTO) error {
+	return UpdateEmailUserRepository(id, email.Email)
+}
+
 func DeleteUserByIdService(id uint) error {
 	err := DeleteUserbyIDRepository(id)
 	return err

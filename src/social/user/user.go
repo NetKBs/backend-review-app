@@ -32,3 +32,7 @@ type UpdatePasswordDTO struct {
 type UpdateAvatarDTO struct {
 	AvatarImage *multipart.FileHeader `form:"avatar_image" binding:"required"`
 }
+
+type UpdateEmailDTO struct {
+	Email string `json:"email" binding:"required"`
+}

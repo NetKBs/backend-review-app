@@ -14,5 +14,6 @@ func RegisterRoutes(router *gin.Engine) {
 
 		users.PUT("/password/:id", UpdatePasswordUserController)
 		users.PUT("/avatar/:id", UpdateAvatarUserController)
+		users.PUT("/email/:id", UpdateEmailUserController)
 	}
 }

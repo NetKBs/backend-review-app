@@ -59,6 +59,18 @@ func UpdateAvatarUserRepository(id uint, avatarPath string) (string, error) {
 	return oldAvatar, nil
 }
 
+func UpdateEmailUserRepository(id uint, email string) error {
+	db := config.DB
+
+	if err := db.Where("id = ?", id).First(&schema.User{}).Error; err != nil {
+		return err
+	}
+	if err := db.Model(&schema.User{}).Where("id = ?", id).Update("email", email).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 func CreateUserRepository(user schema.User) (uint, error) {
 	db := config.DB
 	if err := db.Create(&user).Error; err != nil {
