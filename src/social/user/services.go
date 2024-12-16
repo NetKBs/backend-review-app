@@ -15,11 +15,22 @@ func UserExistsByUsernameService(username string) (exists bool, err error) {
 	return UserExistsByUsernameRepository(username)
 }
 
+func UserExistsByEmailService(email string) (exists bool, err error) {
+	return UserExistsByEmailRepository(email)
+}
+
 func UserExistsByIdService(id uint) (exists bool, err error) {
 	return UserExistsByIdRepository(id)
 }
 
 func CreateUserService(userDTO UserCreateDTO) (uint, error) {
+
+	if exists, _ := UserExistsByUsernameService(userDTO.Username); exists {
+		return 0, errors.New("username already exists")
+	}
+	if exists, _ := UserExistsByEmailService(userDTO.Email); exists {
+		return 0, errors.New("email already exists")
+	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userDTO.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -122,6 +133,9 @@ func UpdateAvatarUserService(id uint, newAvatarPath string) error {
 }
 
 func UpdateEmailUserService(id uint, email UserUpdateEmailDTO) error {
+	if exists, _ := UserExistsByEmailService(email.Email); exists {
+		return errors.New("email already exists")
+	}
 	return UpdateEmailUserRepository(id, email.Email)
 }
 
