@@ -10,8 +10,9 @@ func RegisterRoutes(router *gin.Engine) {
 		//users.PUT("/:id", UpdateUserController)
 		users.DELETE("/:id", DeleteUserbyIdController)
 
-		users.GET("/verify/:username", VerifyUsernameUserController)
+		users.GET("/verify/:username", UserExistsByUsernameController)
 
-		users.PUT("/password/:id", UpdatePasswordController)
+		users.PUT("/password/:id", UpdatePasswordUserController)
+		users.PUT("/avatar/:id", UpdateAvatarUserController)
 	}
 }

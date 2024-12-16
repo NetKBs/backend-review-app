@@ -3,6 +3,7 @@ package user
 import (
 	"errors"
 
+	"github.com/NetKBs/backend-reviewapp/src/image"
 	"github.com/NetKBs/backend-reviewapp/src/schema"
 	"github.com/NetKBs/backend-reviewapp/src/social/bookmark"
 	"github.com/NetKBs/backend-reviewapp/src/social/follow"
@@ -10,13 +11,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func VerifyUsernameService(username string) (exists bool, err error) {
+func UserExistsByUsernameService(username string) (exists bool, err error) {
+	return UserExistsByUsernameRepository(username)
+}
 
-	_, err = GetUsernameUserRepository(username)
-	if err != nil {
-		return false, err
-	}
-	return true, err
+func UserExistsByIdService(id uint) (exists bool, err error) {
+	return UserExistsByIdRepository(id)
 }
 
 func CreateUserService(userDTO UserCreateDTO, avatarPath string) (uint, error) {
@@ -105,6 +105,18 @@ func UpdatePasswordUserService(id uint, password UpdatePasswordDTO) error {
 	}
 	err = UpdatePasswordUserRepository(id, string(hashedNewPassword))
 	return err
+}
+
+func UpdateAvatarUserService(id uint, newAvatarPath string) error {
+	oldPath, err := UpdateAvatarUserRepository(id, newAvatarPath)
+	if err != nil {
+		return err
+	}
+	if err := image.DeleteImageByPathService(oldPath); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func DeleteUserByIdService(id uint) error {

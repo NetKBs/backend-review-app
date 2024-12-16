@@ -49,3 +49,10 @@ func DeleteReviewImagesService(id uint) (err error) {
 
 	return nil
 }
+
+func DeleteImageByPathService(imagePath string) (err error) {
+	if err = os.Remove(imagePath); err != nil {
+		return err
+	}
+	return nil
+}

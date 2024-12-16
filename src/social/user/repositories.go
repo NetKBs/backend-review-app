@@ -5,13 +5,22 @@ import (
 	"github.com/NetKBs/backend-reviewapp/src/schema"
 )
 
-func GetUsernameUserRepository(username string) (string, error) {
+func UserExistsByUsernameRepository(username string) (bool, error) {
 	db := config.DB
-	var user schema.User
-	if err := db.Where("username = ?", username).First(&user).Error; err != nil {
-		return user.Username, err
+	var count int64
+	if err := db.Model(&schema.User{}).Where("username = ?", username).Count(&count).Error; err != nil {
+		return false, err
 	}
-	return user.Username, nil
+	return count > 0, nil
+}
+
+func UserExistsByIdRepository(id uint) (bool, error) {
+	db := config.DB
+	var count int64
+	if err := db.Model(&schema.User{}).Where("id = ?", id).Count(&count).Error; err != nil {
+		return false, err
+	}
+	return count > 0, nil
 }
 
 func GetPasswordUserRepository(id uint) (string, error) {
@@ -34,6 +43,20 @@ func UpdatePasswordUserRepository(id uint, newPassword string) error {
 		return err
 	}
 	return nil
+}
+
+func UpdateAvatarUserRepository(id uint, avatarPath string) (string, error) {
+	db := config.DB
+	var oldAvatar string
+
+	if err := db.Model(&schema.User{}).Where("id = ?", id).Pluck("avatar_url", &oldAvatar).Error; err != nil {
+		return "", err
+	}
+	if err := db.Model(&schema.User{}).Where("id = ?", id).Update("avatar_url", avatarPath).Error; err != nil {
+		return "", err
+	}
+
+	return oldAvatar, nil
 }
 
 func CreateUserRepository(user schema.User) (uint, error) {
