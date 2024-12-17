@@ -48,6 +48,24 @@ func GetPasswordUserRepository(id uint) (string, error) {
 	return dbPassword, nil
 }
 
+func CreateUserRepository(user schema.User) (uint, error) {
+	db := config.DB
+	if err := db.Create(&user).Error; err != nil {
+		return 0, err
+	}
+	return user.ID, nil
+}
+
+func GetUserByIdRepository(id uint) (user schema.User, err error) {
+	db := config.DB
+
+	if err = db.Where("id = ?", id).First(&user).Error; err != nil {
+		return user, err
+	}
+
+	return user, nil
+}
+
 func UpdatePasswordUserRepository(id uint, newPassword string) error {
 	db := config.DB
 	if err := db.Model(&schema.User{}).Where("id = ?", id).Update("password", newPassword).Error; err != nil {
@@ -85,31 +103,26 @@ func UpdateEmailUserRepository(id uint, email string) error {
 	return nil
 }
 
-func CreateUserRepository(user schema.User) (uint, error) {
-	db := config.DB
-	if err := db.Create(&user).Error; err != nil {
-		return 0, err
-	}
-	return user.ID, nil
-}
-
-func GetUserByIdRepository(id uint) (user schema.User, err error) {
-	db := config.DB
-
-	if err = db.Where("id = ?", id).First(&user).Error; err != nil {
-		return user, err
-	}
-
-	return user, nil
-}
-
-func UpdateUserRepository(id uint, userDTO UserUpdateDTO) error {
+func UpdateUserDisplayNameRepository(id uint, userDTO UserUpdateDisplayNameDTO) error {
 	db := config.DB
 
 	if err := db.Where("id = ?", id).First(&schema.User{}).Error; err != nil {
 		return err
 	}
 	if err := db.Model(&schema.User{}).Where("id = ?", id).Update("display_name", userDTO.DisplayName).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func UpdateUserUsernameRepository(id uint, userDTO UserUpdateUsernameDTO) error {
+	db := config.DB
+
+	if err := db.Where("id = ?", id).First(&schema.User{}).Error; err != nil {
+		return err
+	}
+	if err := db.Model(&schema.User{}).Where("id = ?", id).Update("username", userDTO.Username).Error; err != nil {
 		return err
 	}
 

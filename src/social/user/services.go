@@ -139,8 +139,15 @@ func UpdateEmailUserService(id uint, email UserUpdateEmailDTO) error {
 	return UpdateEmailUserRepository(id, email.Email)
 }
 
-func UpdateUserService(id uint, userDTO UserUpdateDTO) error {
-	return UpdateUserRepository(id, userDTO)
+func UpdateUserDisplayNameService(id uint, userDTO UserUpdateDisplayNameDTO) error {
+	return UpdateUserDisplayNameRepository(id, userDTO)
+}
+
+func UpdateUserUsernameService(id uint, userDTO UserUpdateUsernameDTO) error {
+	if exists, _ := UserExistsByUsernameService(userDTO.Username); exists {
+		return errors.New("username already exists")
+	}
+	return UpdateUserUsernameRepository(id, userDTO)
 }
 
 func DeleteUserByIdService(id uint) error {

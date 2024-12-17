@@ -37,6 +37,10 @@ type UserUpdateEmailDTO struct {
 	Email string `json:"email" binding:"required"`
 }
 
-type UserUpdateDTO struct {
+type UserUpdateDisplayNameDTO struct {
 	DisplayName string `json:"display_name" binding:"required"`
+}
+
+type UserUpdateUsernameDTO struct {
+	Username string `json:"username" binding:"required"`
 }
