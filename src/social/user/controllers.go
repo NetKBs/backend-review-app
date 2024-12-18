@@ -2,60 +2,15 @@ package user
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
+	"os/exec"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
-
-func CreateUserController(c *gin.Context) {
-	var userDTO UserRequestDTO
-
-	if err := c.ShouldBindJSON(&userDTO); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if userDTO.Username == "" || userDTO.Email == "" || userDTO.Password == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "username and email are required"})
-		return
-	}
-
-	newUser, err := CreateUserService(userDTO)
-
-	if err != nil {
-		status, errorMessage := handleExceptions(err)
-		c.JSON(status, gin.H{"error": errorMessage})
-		return
-	}
-
-	data := []UserResponseDTO{newUser}
-	c.JSON(http.StatusOK, gin.H{
-		"data": data,
-	})
-
-}
-
-func GetUserByIdController(c *gin.Context) {
-	id := c.Param("id")
-	revId, err := strconv.ParseUint(id, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
-		return
-	}
-
-	user, err := GetUserByIdService(uint(revId))
-	if err != nil {
-		status, errorMessage := handleExceptions(err)
-		c.JSON(status, gin.H{"error": errorMessage, "id": revId})
-		return
-	}
-	data := []UserResponseDTO{user}
-	c.JSON(http.StatusOK, gin.H{
-		"data": data,
-	})
-}
 
 func handleExceptions(err error) (int, string) {
 	switch {
@@ -66,48 +21,66 @@ func handleExceptions(err error) (int, string) {
 	}
 }
 
-func UpdateUserController(c *gin.Context) {
+func UserExistsByUsernameController(c *gin.Context) {
+	username := c.Param("username")
+	exists, err := UserExistsByFieldService("username", username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"exists": exists,
+	})
+}
 
-	var newUser UserResponseDTO
-
-	if err := c.ShouldBindJSON(&newUser); err != nil {
+func CreateUserController(c *gin.Context) {
+	var userDTO UserCreateDTO
+	if err := c.ShouldBind(&userDTO); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	err := UpdateUserService(newUser)
-
+	id, err := CreateUserService(userDTO)
 	if err != nil {
 		status, errorMessage := handleExceptions(err)
 		c.JSON(status, gin.H{"error": errorMessage})
 		return
 	}
 
-	data := []UserResponseDTO{newUser}
+	// avatar
+	newUUID, err := exec.Command("uuidgen").Output()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	newFilename := fmt.Sprintf("%s.png", strings.TrimSpace(string(newUUID)))
+
+	path := fmt.Sprintf("images/%s", newFilename)
+	if err := c.SaveUploadedFile(userDTO.AvatarImage, path); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := UpdateAvatarUserService(id, path); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"data": data,
+		"id": id,
 	})
+
 }
 
-func UpdatePasswordController(c *gin.Context) {
+func GetUserByIdController(c *gin.Context) {
 	id := c.Param("id")
-	revId, err := strconv.ParseUint(id, 10, 64)
+	userId, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
 
-	var passwordStruct struct {
-		Password string `json:"password"`
-	}
-
-	if err := c.ShouldBindJSON(passwordStruct); err != nil || passwordStruct.Password == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "password is required"})
-		return
-	}
-
-	err = UpdatePasswordUserService(uint(revId), passwordStruct.Password)
-
+	user, err := GetUserByIdService(uint(userId))
 	if err != nil {
 		status, errorMessage := handleExceptions(err)
 		c.JSON(status, gin.H{"error": errorMessage})
@@ -115,7 +88,158 @@ func UpdatePasswordController(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Contraseña cambiada exitosamente",
+		"data": user,
+	})
+}
+
+func UpdatePasswordUserController(c *gin.Context) {
+	id := c.Param("id")
+	userId, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+
+	var passwordDTO UserUpdatePasswordDTO
+	if err := c.ShouldBindJSON(&passwordDTO); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := UpdatePasswordUserService(uint(userId), passwordDTO); err != nil {
+		status, errorMessage := handleExceptions(err)
+		c.JSON(status, gin.H{"error": errorMessage})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Password updated successfully",
+	})
+}
+
+func UpdateAvatarUserController(c *gin.Context) {
+	id := c.Param("id")
+	userId, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+
+	exists, err := UserExistsByFieldService("id", uint(userId))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if !exists {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+
+	var avatarDTO UserUpdateAvatarDTO
+	if err := c.ShouldBind(&avatarDTO); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// avatar
+	newUUID, err := exec.Command("uuidgen").Output()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	newFilename := fmt.Sprintf("%s.png", strings.TrimSpace(string(newUUID)))
+
+	path := fmt.Sprintf("images/%s", newFilename)
+	if err := c.SaveUploadedFile(avatarDTO.AvatarImage, path); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := UpdateAvatarUserService(uint(userId), path); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Avatar updated successfully",
+	})
+
+}
+
+func UpdateEmailUserController(c *gin.Context) {
+	id := c.Param("id")
+	userId, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+
+	var emailDTO UserUpdateEmailDTO
+	if err := c.ShouldBindJSON(&emailDTO); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := UpdateEmailUserService(uint(userId), emailDTO); err != nil {
+		status, errorMessage := handleExceptions(err)
+		c.JSON(status, gin.H{"error": errorMessage})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Email updated successfully",
+	})
+
+}
+
+func UpdateUserDisplayNameController(c *gin.Context) {
+	id := c.Param("id")
+	userId, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+
+	var userDTO UserUpdateDisplayNameDTO
+	if err := c.ShouldBindJSON(&userDTO); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := UpdateUserDisplayNameService(uint(userId), userDTO); err != nil {
+		status, errorMessage := handleExceptions(err)
+		c.JSON(status, gin.H{"error": errorMessage})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User updated successfully",
+	})
+
+}
+
+func UpdateUsernameUserController(c *gin.Context) {
+	id := c.Param("id")
+	userId, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+
+	var userDTO UserUpdateUsernameDTO
+	if err := c.ShouldBindJSON(&userDTO); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := UpdateUserUsernameService(uint(userId), userDTO); err != nil {
+		status, errorMessage := handleExceptions(err)
+		c.JSON(status, gin.H{"error": errorMessage})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User updated successfully",
 	})
 }
 
@@ -126,8 +250,8 @@ func DeleteUserbyIdController(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
-	err = DeleteUserByIdService(uint(revId))
 
+	err = DeleteUserByIdService(uint(revId))
 	if err != nil {
 		status, errorMessage := handleExceptions(err)
 		c.JSON(status, gin.H{"error": errorMessage})

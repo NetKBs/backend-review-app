@@ -1,35 +1,63 @@
 package user
 
 import (
+	"errors"
+
+	"github.com/NetKBs/backend-reviewapp/src/image"
 	"github.com/NetKBs/backend-reviewapp/src/schema"
+	"github.com/NetKBs/backend-reviewapp/src/social/bookmark"
+	"github.com/NetKBs/backend-reviewapp/src/social/follow"
+	"github.com/NetKBs/backend-reviewapp/src/social/visited"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func CreateUserService(userDTO UserRequestDTO) (UserResponseDTO, error) {
+func HandleUniquenessError(type_ string) error {
+	switch type_ {
+	case "username":
+		return errors.New("username already exists")
+	case "email":
+		return errors.New("email already exists")
+	default:
+		return nil
+	}
+}
 
-	hashedPassword, err := bcryptHash(userDTO.Password)
+func UserExistsByFieldService(field string, value interface{}) (bool, error) {
+	return UserExistsByFieldRepository(field, value)
+}
+
+func CreateUserService(userDTO UserCreateDTO) (uint, error) {
+
+	if exists, err := UserExistsByFieldService("username", userDTO.Username); err != nil {
+		return 0, err
+	} else if exists {
+		return 0, HandleUniquenessError("username")
+	}
+
+	if exists, err := UserExistsByFieldService("email", userDTO.Email); err != nil {
+		return 0, err
+	} else if exists {
+		return 0, HandleUniquenessError("email")
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userDTO.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return UserResponseDTO{}, err
+		return 0, err
 	}
 
 	user := schema.User{
 		Username:    userDTO.Username,
-		AvatarUrl:   &userDTO.AvatarUrl,
 		DisplayName: userDTO.DisplayName,
 		Email:       userDTO.Email,
-		Password:    hashedPassword,
+		Password:    string(hashedPassword),
 	}
 
-	err = CreateUserRepository(&user)
+	id, err := CreateUserRepository(user)
+	if err != nil {
+		return 0, err
+	}
 
-	return UserResponseDTO{
-		ID:          user.ID,
-		Username:    user.Username,
-		AvatarUrl:   *user.AvatarUrl,
-		DisplayName: user.DisplayName,
-		Email:       user.Email,
-	}, err
-
+	return id, nil
 }
 
 func GetUserByIdService(id uint) (userDTO UserResponseDTO, err error) {
@@ -39,12 +67,35 @@ func GetUserByIdService(id uint) (userDTO UserResponseDTO, err error) {
 		return userDTO, err
 	}
 
+	followersCount, err := follow.GetFollowersCountService(id)
+	if err != nil {
+		return userDTO, err
+	}
+	followingCount, err := follow.GetFollowingCountService(id)
+	if err != nil {
+		return userDTO, err
+	}
+	bookmarkCount, err := bookmark.GetBookmarkCount(id)
+	if err != nil {
+		return userDTO, err
+	}
+	visitedCount, err := visited.GetVisitedCount(id)
+	if err != nil {
+		return userDTO, err
+	}
+
 	userDTO = UserResponseDTO{
-		ID:          user.ID,
-		Username:    user.Username,
-		AvatarUrl:   getStringPointer(user.AvatarUrl),
-		DisplayName: user.DisplayName,
-		Email:       user.Email,
+		ID:            user.ID,
+		Username:      user.Username,
+		AvatarUrl:     getStringPointer(user.AvatarUrl),
+		DisplayName:   user.DisplayName,
+		Email:         user.Email,
+		Followers:     followersCount,
+		Following:     followingCount,
+		Bookmarks:     bookmarkCount,
+		VisitedPlaces: visitedCount,
+		CreatedAt:     user.CreatedAt.String(),
+		UpdatedAt:     user.UpdatedAt.String(),
 	}
 
 	return userDTO, nil
@@ -57,54 +108,70 @@ func getStringPointer(ptr *string) string {
 	return *ptr
 }
 
-func UpdateUserService(newUser UserResponseDTO) error {
+func UpdatePasswordUserService(id uint, password UserUpdatePasswordDTO) error {
+	dbPassword, err := GetPasswordUserRepository(id)
+	if err != nil {
+		return err
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(dbPassword), []byte(password.OldPassword)); err != nil {
+		return errors.New("invalid old password")
+	}
 
-	user, err := GetUserByIdRepository(uint(newUser.ID))
+	hashedNewPassword, err := bcrypt.GenerateFromPassword([]byte(password.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	err = UpdatePasswordUserRepository(id, string(hashedNewPassword))
+	return err
+}
+
+func UpdateAvatarUserService(id uint, newAvatarPath string) error {
+	oldPath, err := UpdateAvatarUserRepository(id, newAvatarPath)
 	if err != nil {
 		return err
 	}
 
-	handleChanges(&user, &newUser)
-	err = UpdateUserRepository(&user)
+	if oldPath != "" {
+		if err := image.DeleteImageByPathService(oldPath); err != nil {
+			return err
+		}
+	}
 
-	return err
+	return nil
 }
 
-func handleChanges(user *schema.User, newUser *UserResponseDTO) error {
-	var err error
-	if newUser.Username != "" {
-		user.Username = newUser.Username
+func UpdateEmailUserService(id uint, email UserUpdateEmailDTO) error {
+	if exists, err := UserExistsByFieldService("email", email.Email); err != nil {
+		return nil
+	} else if exists {
+		return HandleUniquenessError("email")
 	}
-	if newUser.AvatarUrl != "" {
-		user.AvatarUrl = &newUser.AvatarUrl
-	}
-	if newUser.DisplayName != "" {
-		user.DisplayName = newUser.DisplayName
-	}
-	if newUser.Email != "" {
-		user.Email = newUser.Email
-	}
-	return err
+
+	return UpdateEmailUserRepository(id, email.Email)
 }
 
-func UpdatePasswordUserService(id uint, password string) error {
-	hashedPassword, err := bcryptHash(password)
-
-	if err != nil {
-		return err
-	}
-	err = UpdatePasswordUserRepository(id, hashedPassword)
-
-	return err
+func UpdateUserDisplayNameService(id uint, userDTO UserUpdateDisplayNameDTO) error {
+	return UpdateUserDisplayNameRepository(id, userDTO)
 }
 
-func bcryptHash(password string) (string, error) {
-	bytePassword := []byte(password)
-	hash, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost) //DefaultCost es 10
-	return string(hash), err
+func UpdateUserUsernameService(id uint, userDTO UserUpdateUsernameDTO) error {
+	if exists, err := UserExistsByFieldService("username", userDTO.Username); err != nil {
+		return nil
+	} else if exists {
+		return HandleUniquenessError("username")
+	}
+	return UpdateUserUsernameRepository(id, userDTO)
 }
 
 func DeleteUserByIdService(id uint) error {
-	err := DeleteUserbyIDRepository(id)
-	return err
+	avatarPath, err := DeleteUserbyIDRepository(id)
+	if err != nil {
+		return err
+	}
+
+	if err := image.DeleteImageByPathService(avatarPath); err != nil {
+		return err
+	}
+
+	return nil
 }

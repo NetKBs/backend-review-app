@@ -3,11 +3,18 @@ package user
 import "github.com/gin-gonic/gin"
 
 func RegisterRoutes(router *gin.Engine) {
-	users := router.Group("/user")
+	users := router.Group("/users")
 	{
-		users.GET("/:id", GetUserByIdController)       // Obtener un usuario por ID (Read)
-		users.POST("/", CreateUserController)          // Crear un nuevo usuario (Create)
-		users.PUT("/:id", UpdateUserController)        // Actualizar un usuario por ID (Update)
-		users.DELETE("/:id", DeleteUserbyIdController) // Eliminar un usuario por ID (Delete)
+		users.GET("/verify/:username", UserExistsByUsernameController)
+		users.GET("/:id", GetUserByIdController)
+
+		users.POST("/", CreateUserController)
+		users.DELETE("/:id", DeleteUserbyIdController)
+
+		users.PUT("/displayname/:id", UpdateUserDisplayNameController)
+		users.PUT("/username/:id", UpdateUsernameUserController)
+		users.PUT("/password/:id", UpdatePasswordUserController)
+		users.PUT("/avatar/:id", UpdateAvatarUserController)
+		users.PUT("/email/:id", UpdateEmailUserController)
 	}
 }
