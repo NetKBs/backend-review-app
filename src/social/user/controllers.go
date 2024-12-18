@@ -23,7 +23,7 @@ func handleExceptions(err error) (int, string) {
 
 func UserExistsByUsernameController(c *gin.Context) {
 	username := c.Param("username")
-	exists, err := UserExistsByUsernameService(username)
+	exists, err := UserExistsByFieldService("username", username)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -125,14 +125,14 @@ func UpdateAvatarUserController(c *gin.Context) {
 		return
 	}
 
-	exists, err := UserExistsByIdService(uint(userId))
+	exists, err := UserExistsByFieldService("id", uint(userId))
 	if err != nil {
-		status, errorMessage := handleExceptions(err)
-		c.JSON(status, gin.H{"error": errorMessage})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	if !exists {
-		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
 	}
 
 	var avatarDTO UserUpdateAvatarDTO

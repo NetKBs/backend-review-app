@@ -11,25 +11,33 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func UserExistsByUsernameService(username string) (exists bool, err error) {
-	return UserExistsByUsernameRepository(username)
+func HandleUniquenessError(type_ string) error {
+	switch type_ {
+	case "username":
+		return errors.New("username already exists")
+	case "email":
+		return errors.New("email already exists")
+	default:
+		return nil
+	}
 }
 
-func UserExistsByEmailService(email string) (exists bool, err error) {
-	return UserExistsByEmailRepository(email)
-}
-
-func UserExistsByIdService(id uint) (exists bool, err error) {
-	return UserExistsByIdRepository(id)
+func UserExistsByFieldService(field string, value interface{}) (bool, error) {
+	return UserExistsByFieldRepository(field, value)
 }
 
 func CreateUserService(userDTO UserCreateDTO) (uint, error) {
 
-	if exists, _ := UserExistsByUsernameService(userDTO.Username); exists {
-		return 0, errors.New("username already exists")
+	if exists, err := UserExistsByFieldService("username", userDTO.Username); err != nil {
+		return 0, err
+	} else if exists {
+		return 0, HandleUniquenessError("username")
 	}
-	if exists, _ := UserExistsByEmailService(userDTO.Email); exists {
-		return 0, errors.New("email already exists")
+
+	if exists, err := UserExistsByFieldService("email", userDTO.Email); err != nil {
+		return 0, err
+	} else if exists {
+		return 0, HandleUniquenessError("email")
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userDTO.Password), bcrypt.DefaultCost)
@@ -133,9 +141,12 @@ func UpdateAvatarUserService(id uint, newAvatarPath string) error {
 }
 
 func UpdateEmailUserService(id uint, email UserUpdateEmailDTO) error {
-	if exists, _ := UserExistsByEmailService(email.Email); exists {
-		return errors.New("email already exists")
+	if exists, err := UserExistsByFieldService("email", email.Email); err != nil {
+		return nil
+	} else if exists {
+		return HandleUniquenessError("email")
 	}
+
 	return UpdateEmailUserRepository(id, email.Email)
 }
 
@@ -144,8 +155,10 @@ func UpdateUserDisplayNameService(id uint, userDTO UserUpdateDisplayNameDTO) err
 }
 
 func UpdateUserUsernameService(id uint, userDTO UserUpdateUsernameDTO) error {
-	if exists, _ := UserExistsByUsernameService(userDTO.Username); exists {
-		return errors.New("username already exists")
+	if exists, err := UserExistsByFieldService("username", userDTO.Username); err != nil {
+		return nil
+	} else if exists {
+		return HandleUniquenessError("username")
 	}
 	return UpdateUserUsernameRepository(id, userDTO)
 }

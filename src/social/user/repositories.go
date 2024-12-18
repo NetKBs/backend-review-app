@@ -2,10 +2,21 @@ package user
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/NetKBs/backend-reviewapp/config"
 	"github.com/NetKBs/backend-reviewapp/src/schema"
 )
+
+func UserExistsByFieldRepository(field string, value interface{}) (bool, error) {
+	db := config.DB
+	var count int64
+	query := fmt.Sprintf("%s = ? AND deleted_at IS NULL", field)
+	if err := db.Model(&schema.User{}).Where(query, value).Count(&count).Error; err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
 
 func UserExistsByUsernameRepository(username string) (bool, error) {
 	db := config.DB
