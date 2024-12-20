@@ -3,12 +3,12 @@ package review
 import (
 	"fmt"
 	"net/http"
-	"os/exec"
 	"strconv"
 	"strings"
 
 	"github.com/NetKBs/backend-reviewapp/src/image"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func GetReviewByIdController(c *gin.Context) {
@@ -43,12 +43,8 @@ func CreateReviewController(c *gin.Context) {
 	var Imagepaths []string
 	for _, file := range ReviewCreateDTO.Images {
 
-		newUUID, err := exec.Command("uuidgen").Output()
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		newFilename := fmt.Sprintf("%s.png", strings.TrimSpace(string(newUUID)))
+		newUUID := uuid.New()
+		newFilename := fmt.Sprintf("%s.png", strings.TrimSpace(newUUID.String()))
 
 		path := fmt.Sprintf("images/%s", newFilename)
 		if err := c.SaveUploadedFile(file, path); err != nil {

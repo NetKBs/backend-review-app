@@ -4,11 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"os/exec"
 	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -48,12 +48,8 @@ func CreateUserController(c *gin.Context) {
 	}
 
 	// avatar
-	newUUID, err := exec.Command("uuidgen").Output()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	newFilename := fmt.Sprintf("%s.png", strings.TrimSpace(string(newUUID)))
+	newUUID := uuid.New()
+	newFilename := fmt.Sprintf("%s.png", strings.TrimSpace(newUUID.String()))
 
 	path := fmt.Sprintf("images/%s", newFilename)
 	if err := c.SaveUploadedFile(userDTO.AvatarImage, path); err != nil {
@@ -142,12 +138,8 @@ func UpdateAvatarUserController(c *gin.Context) {
 	}
 
 	// avatar
-	newUUID, err := exec.Command("uuidgen").Output()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	newFilename := fmt.Sprintf("%s.png", strings.TrimSpace(string(newUUID)))
+	newUUID := uuid.New()
+	newFilename := fmt.Sprintf("%s.png", strings.TrimSpace(newUUID.String()))
 
 	path := fmt.Sprintf("images/%s", newFilename)
 	if err := c.SaveUploadedFile(avatarDTO.AvatarImage, path); err != nil {
