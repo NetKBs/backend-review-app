@@ -90,6 +90,7 @@ func GetUserByIdService(id uint) (userDTO UserResponseDTO, err error) {
 		AvatarUrl:     getStringPointer(user.AvatarUrl),
 		DisplayName:   user.DisplayName,
 		Email:         user.Email,
+		Verified:      user.Verified,
 		Followers:     followersCount,
 		Following:     followingCount,
 		Bookmarks:     bookmarkCount,
