@@ -7,6 +7,7 @@ import (
 	"github.com/NetKBs/backend-reviewapp/config"
 	"github.com/NetKBs/backend-reviewapp/geoapify"
 	"github.com/NetKBs/backend-reviewapp/src/image"
+	"github.com/NetKBs/backend-reviewapp/src/inference"
 	"github.com/NetKBs/backend-reviewapp/src/maps"
 	"github.com/NetKBs/backend-reviewapp/src/social/auth"
 	"github.com/NetKBs/backend-reviewapp/src/social/comment"
@@ -40,5 +41,6 @@ func main() {
 	place.RegisterRoutes(r)
 	user.RegisterRoutes(r)
 	comment.RegisterRoutes(r)
+	inference.RegisterRoutes(r)
 	r.Run()
 }
