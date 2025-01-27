@@ -11,15 +11,17 @@ type User struct {
 	DisplayName      string
 	Email            string
 	Password         string
-	Reviews          []Review       `gorm:"foreignKey:UserId"`
-	Comments         []Comment      `gorm:"foreignKey:UserId"`
-	Answers          []Answer       `gorm:"foreignKey:UserId"`
-	Reactions        []Reaction     `gorm:"foreignKey:UserId"`
-	Notifications    []Notification `gorm:"foreignKey:UserId"`
-	Following        []User         `gorm:"many2many:follow;joinForeignKey:FollowerID;joinReferences:FollowedID"`
-	Followers        []User         `gorm:"many2many:follow;joinForeignKey:FollowedID;joinReferences:FollowerID"`
-	VisitedPlaces    []Place        `gorm:"many2many:place_visitors"`
-	BookmarkedPlaces []Place        `gorm:"many2many:bookmark"`
+	Verified         bool             `gorm:"default:false"`
+	Reviews          []Review         `gorm:"foreignKey:UserId"`
+	Comments         []Comment        `gorm:"foreignKey:UserId"`
+	Answers          []Answer         `gorm:"foreignKey:UserId"`
+	Reactions        []Reaction       `gorm:"foreignKey:UserId"`
+	Notifications    []Notification   `gorm:"foreignKey:UserId"`
+	ValidationCode   []ValidationCode `gorm:"foreignKey:UserId"`
+	Following        []User           `gorm:"many2many:follow;joinForeignKey:FollowerID;joinReferences:FollowedID"`
+	Followers        []User           `gorm:"many2many:follow;joinForeignKey:FollowedID;joinReferences:FollowerID"`
+	VisitedPlaces    []Place          `gorm:"many2many:place_visitors"`
+	BookmarkedPlaces []Place          `gorm:"many2many:bookmark"`
 }
 
 type Reaction struct {
@@ -71,4 +73,10 @@ type Answer struct {
 	UserId    uint
 	CommentId uint
 	Text      string
+}
+
+type ValidationCode struct {
+	gorm.Model
+	UserId uint
+	Code   string
 }

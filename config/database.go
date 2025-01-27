@@ -43,6 +43,7 @@ func SyncDB() {
 		&schema.Answer{},
 		&schema.Reaction{},
 		&schema.Notification{},
+		&schema.ValidationCode{},
 	}
 
 	DB.AutoMigrate(models...)
