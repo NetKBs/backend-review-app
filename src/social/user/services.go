@@ -143,7 +143,7 @@ func UpdateAvatarUserService(id uint, newAvatarPath string) error {
 
 func UpdateEmailUserService(id uint, email UserUpdateEmailDTO) error {
 	if exists, err := UserExistsByFieldService("email", email.Email); err != nil {
-		return nil
+		return err
 	} else if exists {
 		return HandleUniquenessError("email")
 	}
@@ -157,7 +157,7 @@ func UpdateUserDisplayNameService(id uint, userDTO UserUpdateDisplayNameDTO) err
 
 func UpdateUserUsernameService(id uint, userDTO UserUpdateUsernameDTO) error {
 	if exists, err := UserExistsByFieldService("username", userDTO.Username); err != nil {
-		return nil
+		return err
 	} else if exists {
 		return HandleUniquenessError("username")
 	}

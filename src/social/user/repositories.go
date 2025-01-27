@@ -18,33 +18,6 @@ func UserExistsByFieldRepository(field string, value interface{}) (bool, error) 
 	return count > 0, nil
 }
 
-func UserExistsByUsernameRepository(username string) (bool, error) {
-	db := config.DB
-	var count int64
-	if err := db.Model(&schema.User{}).Where("username = ? AND deleted_at IS NULL", username).Count(&count).Error; err != nil {
-		return false, err
-	}
-	return count > 0, nil
-}
-
-func UserExistsByEmailRepository(email string) (bool, error) {
-	db := config.DB
-	var count int64
-	if err := db.Model(&schema.User{}).Where("email = ? AND deleted_at IS NULL", email).Count(&count).Error; err != nil {
-		return false, err
-	}
-	return count > 0, nil
-}
-
-func UserExistsByIdRepository(id uint) (bool, error) {
-	db := config.DB
-	var count int64
-	if err := db.Model(&schema.User{}).Where("id = ? AND deleted_at IS NULL", id).Count(&count).Error; err != nil {
-		return false, err
-	}
-	return count > 0, nil
-}
-
 func GetPasswordUserRepository(id uint) (string, error) {
 	db := config.DB
 	var dbPassword string
