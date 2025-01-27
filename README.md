@@ -32,6 +32,8 @@ Para ejecutar este proyecto, necesitarás agregar las siguientes variables de en
 * `TURSO_AUTH_TOKEN` *(opcional)*: Token de autenticación para la base de datos de TURSO.
 * `GEOAPIFY_KEY`: Key del mapa
 * `SECRET_KEY`: Key usada para generar las firmas del jwt
+* `RESEND_APIKEY` Key para el resend
+* `RESEND_DOMAIN` Nombre del dominio privado
 ---
 
 ## 🗄️ Base de Datos Local
