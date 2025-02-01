@@ -11,6 +11,7 @@ import (
 	"github.com/NetKBs/backend-reviewapp/src/social/auth"
 	"github.com/NetKBs/backend-reviewapp/src/social/comment"
 	"github.com/NetKBs/backend-reviewapp/src/social/place"
+	"github.com/NetKBs/backend-reviewapp/src/social/reaction"
 	"github.com/NetKBs/backend-reviewapp/src/social/review"
 	"github.com/NetKBs/backend-reviewapp/src/social/user"
 	"github.com/gin-contrib/cors"
@@ -40,5 +41,6 @@ func main() {
 	place.RegisterRoutes(r)
 	user.RegisterRoutes(r)
 	comment.RegisterRoutes(r)
+	reaction.RegisterRoutes(r)
 	r.Run()
 }
