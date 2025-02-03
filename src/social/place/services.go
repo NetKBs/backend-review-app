@@ -43,3 +43,22 @@ func GetPlaceDetailsByCoordsService(ctx context.Context, lat string, lon string)
 	}
 	return placeDetailsDTO, err
 }
+
+func GetPlacesByCoordsService(ctx context.Context, lat string, lon string) (places geoapify.Places, err error) {
+	places, err = geoapify.GetPlacesAroundCoords(lat, lon)
+	if err != nil {
+		return places, err
+	}
+	// place, err := findPlaceByMapsIdRepo(placeDetails.MapsID)
+	// if err != nil {
+	// 	return placeDetailsDTO, err
+	// }
+
+	// placeDetailsDTO = PlaceDetailsResponseDTO{
+	// 	ID:        place.ID,
+	// 	Details:   placeDetails,
+	// 	CreatedAt: place.CreatedAt.String(),
+	// 	UpdatedAt: place.UpdatedAt.String(),
+	// }
+	return places, err
+}
