@@ -2,6 +2,7 @@ package user
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/NetKBs/backend-reviewapp/config"
@@ -126,4 +127,18 @@ func DeleteUserbyIDRepository(id uint) (string, error) {
 	}
 
 	return *user.AvatarUrl, nil
+}
+
+func VerifyUserRepository(id uint) error {
+	db := config.DB
+
+	if err := db.Where("id = ?", id).First(&schema.User{}).Error; err != nil {
+		return errors.New("user not found")
+	}
+
+	if err := db.Model(&schema.User{}).Where("id = ?", id).Update("verified", true).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
