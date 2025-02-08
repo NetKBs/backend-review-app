@@ -16,7 +16,7 @@ func GetCommentsReviewCountRepository(id uint) (commentsCount uint, err error) {
 	return uint(_commentsCount), nil
 }
 
-func getCommentsByIdReview(id uint) (reviewComments []schema.Comment, err error) {
+func GetCommentsByIdReviewRepository(id uint) (reviewComments []schema.Comment, err error) {
 	db := config.DB
 
 	if err = db.Table("comments").Where("review_id = ?", id).Find(&reviewComments).Error; err != nil {
