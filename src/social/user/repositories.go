@@ -51,6 +51,15 @@ func GetUserByIdRepository(id uint) (user schema.User, err error) {
 	return user, nil
 }
 
+func GetUserByUsernameRepository(username string) (user schema.User, err error) {
+	db := config.DB
+
+	if err = db.Where("username = ?", username).First(&user).Error; err != nil {
+		return user, err
+	}
+	return user, nil
+}
+
 func UpdatePasswordUserRepository(id uint, newPassword string) error {
 	db := config.DB
 	if err := db.Model(&schema.User{}).Where("id = ?", id).Update("password", newPassword).Error; err != nil {
