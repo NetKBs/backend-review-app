@@ -70,13 +70,8 @@ func CreateUserController(c *gin.Context) {
 
 func GetUserByIdController(c *gin.Context) {
 	id := c.Param("id")
-	userId, err := strconv.ParseUint(id, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
-		return
-	}
 
-	user, err := GetUserByIdService(uint(userId))
+	user, err := GetUserByFieldService("id", id)
 	if err != nil {
 		status, errorMessage := handleExceptions(err)
 		c.JSON(status, gin.H{"error": errorMessage})
@@ -86,6 +81,20 @@ func GetUserByIdController(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"data": user,
 	})
+}
+
+func GetUserByUsernameController(c *gin.Context) {
+	username := c.Param("username")
+
+	user, err := GetUserByFieldService("username", username)
+	if err != nil {
+		status, errorMessage := handleExceptions(err)
+		c.JSON(status, gin.H{"error": errorMessage})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": user})
 }
 
 func UpdatePasswordUserController(c *gin.Context) {

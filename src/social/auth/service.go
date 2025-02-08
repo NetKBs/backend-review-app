@@ -10,7 +10,7 @@ import (
 var jwtKey = []byte(os.Getenv("SECRECT_KEY"))
 
 func LoginService(username, password string) (string, error) {
-	_, err := LoginRepository(username, password)
+	user, err := LoginRepository(username, password)
 	if err != nil {
 		return "", err
 	}
@@ -21,7 +21,8 @@ func LoginService(username, password string) (string, error) {
 
 	expirationTime := time.Now().Add(24 * time.Hour) // 24h
 	var claims = Claims{
-		Username: username,
+		UserId:   user.ID,
+		Username: user.Username,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},

@@ -9,6 +9,7 @@ import (
 	"github.com/NetKBs/backend-reviewapp/src/image"
 	"github.com/NetKBs/backend-reviewapp/src/maps"
 	"github.com/NetKBs/backend-reviewapp/src/social/answer"
+	"github.com/NetKBs/backend-reviewapp/src/resend"
 	"github.com/NetKBs/backend-reviewapp/src/social/auth"
 	"github.com/NetKBs/backend-reviewapp/src/social/comment"
 	"github.com/NetKBs/backend-reviewapp/src/social/place"
@@ -42,5 +43,7 @@ func main() {
 	user.RegisterRoutes(r)
 	comment.RegisterRoutes(r)
 	answer.RegisterRoutes(r)
+	resend.RegisterRoutes(r)
+
 	r.Run()
 }
