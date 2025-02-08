@@ -12,8 +12,8 @@ func GetCommentsReviewCountService(id uint) (commentsCount uint, err error) {
 	return commentsCount, nil
 }
 
-func getCommentsByIdReviewService(id uint) (reviewComments []CommentResponseDTO, err error) {
-	revcomments, err := getCommentsByIdReview(id)
+func GetCommentsByIdReviewService(id uint) (reviewComments []CommentResponseDTO, err error) {
+	revcomments, err := GetCommentsByIdReviewRepository(id)
 	if err != nil {
 		return reviewComments, err
 	}
