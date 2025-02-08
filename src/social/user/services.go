@@ -176,3 +176,7 @@ func DeleteUserByIdService(id uint) error {
 
 	return nil
 }
+
+func VerifyUserService(userId uint) error {
+	return VerifyUserRepository(userId)
+}
