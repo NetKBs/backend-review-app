@@ -16,7 +16,6 @@
 </p>
 <br>
 
-
 ## 🚀 Tecnologías
 
 * Go
@@ -34,6 +33,8 @@ Para ejecutar este proyecto, necesitarás agregar las siguientes variables de en
 * `GEOAPIFY_KEY`: Key de la API de Geoapify. Usado para lugares y mapa
 * `GEMINI_KEY`: Key para la API de Gemini. Usado en el proceso de inferencia
 * `SECRET_KEY`: Key usada para generar las firmas del jwt
+* `RESEND_APIKEY` Key para el resend
+* `RESEND_DOMAIN` Nombre del dominio privado
 ---
 
 ## 🗄️ Base de Datos Local

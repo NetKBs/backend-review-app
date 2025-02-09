@@ -2,6 +2,7 @@ package user
 
 import (
 	"errors"
+	"strconv"
 
 	"github.com/NetKBs/backend-reviewapp/src/image"
 	"github.com/NetKBs/backend-reviewapp/src/schema"
@@ -60,26 +61,46 @@ func CreateUserService(userDTO UserCreateDTO) (uint, error) {
 	return id, nil
 }
 
-func GetUserByIdService(id uint) (userDTO UserResponseDTO, err error) {
+func GetUserByFieldService(field string, value interface{}) (userDTO UserResponseDTO, err error) {
+	var user schema.User
 
-	user, err := GetUserByIdRepository(id)
+	switch field {
+	case "id":
+		var idParsed int
+		if idParsed, err = strconv.Atoi(value.(string)); err != nil {
+			return userDTO, errors.New("invalid id type")
+		}
+		user, err = GetUserByIdRepository(uint(idParsed))
+
+	case "username":
+		username, ok := value.(string)
+		if !ok {
+			return userDTO, errors.New("invalid username type")
+		}
+		user, err = GetUserByUsernameRepository(username)
+
+	default:
+		return userDTO, errors.New("invalid field")
+
+	}
+
 	if err != nil {
 		return userDTO, err
 	}
 
-	followersCount, err := follow.GetFollowersCountService(id)
+	followersCount, err := follow.GetFollowersCountService(user.ID)
 	if err != nil {
 		return userDTO, err
 	}
-	followingCount, err := follow.GetFollowingCountService(id)
+	followingCount, err := follow.GetFollowingCountService(user.ID)
 	if err != nil {
 		return userDTO, err
 	}
-	bookmarkCount, err := bookmark.GetBookmarkCount(id)
+	bookmarkCount, err := bookmark.GetBookmarkCount(user.ID)
 	if err != nil {
 		return userDTO, err
 	}
-	visitedCount, err := visited.GetVisitedCount(id)
+	visitedCount, err := visited.GetVisitedCount(user.ID)
 	if err != nil {
 		return userDTO, err
 	}
@@ -90,6 +111,7 @@ func GetUserByIdService(id uint) (userDTO UserResponseDTO, err error) {
 		AvatarUrl:     getStringPointer(user.AvatarUrl),
 		DisplayName:   user.DisplayName,
 		Email:         user.Email,
+		Verified:      user.Verified,
 		Followers:     followersCount,
 		Following:     followingCount,
 		Bookmarks:     bookmarkCount,
@@ -142,7 +164,7 @@ func UpdateAvatarUserService(id uint, newAvatarPath string) error {
 
 func UpdateEmailUserService(id uint, email UserUpdateEmailDTO) error {
 	if exists, err := UserExistsByFieldService("email", email.Email); err != nil {
-		return nil
+		return err
 	} else if exists {
 		return HandleUniquenessError("email")
 	}
@@ -156,7 +178,7 @@ func UpdateUserDisplayNameService(id uint, userDTO UserUpdateDisplayNameDTO) err
 
 func UpdateUserUsernameService(id uint, userDTO UserUpdateUsernameDTO) error {
 	if exists, err := UserExistsByFieldService("username", userDTO.Username); err != nil {
-		return nil
+		return err
 	} else if exists {
 		return HandleUniquenessError("username")
 	}
@@ -174,4 +196,8 @@ func DeleteUserByIdService(id uint) error {
 	}
 
 	return nil
+}
+
+func VerifyUserService(userId uint) error {
+	return VerifyUserRepository(userId)
 }
