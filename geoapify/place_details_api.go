@@ -46,6 +46,7 @@ func parsePlaceDetails(body []byte) (pd PlaceDetails, err error) {
 	fc_parsed, ok := parsed.(map[string]any)
 	parseFailed = parseFailed || !ok
 
+	// parsed_map: dict = fc_parsed[key].arr[i].dict[key].dict
 	parsed_map, ok := fc_parsed["features"].([]any)[0].(map[string]any)["properties"].(map[string]any)
 	parseFailed = parseFailed || !ok
 
