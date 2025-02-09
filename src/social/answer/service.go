@@ -8,6 +8,10 @@ func GetAnswersByCommentIdService(id uint) (answerComments []AnswerResponseDTO, 
 		return answerComments, err
 	}
 
+	if len(anscomments) == 0 {
+		return []AnswerResponseDTO{}, nil
+	}
+
 	for _, anscomment := range anscomments {
 		answerComments = append(answerComments, AnswerResponseDTO{
 			ID:        anscomment.ID,
