@@ -1,9 +1,9 @@
 package geoapify
 
 type AutocompleteRank struct {
-	Importance float32
-	Confidence float64
-	MatchType  string
+	Importance float32 `json:"importance"`
+	Confidence float64 `json:"confidence"`
+	MatchType  string  `json:"match_type"`
 }
 
 type Geocoding struct {
