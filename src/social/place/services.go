@@ -44,8 +44,9 @@ func GetPlaceDetailsByCoordsService(ctx context.Context, lat string, lon string)
 	return placeDetailsDTO, err
 }
 
-func GetPlacesByCoordsService(ctx context.Context, lat string, lon string) (places geoapify.Places, err error) {
-	places, err = geoapify.GetPlacesAroundCoords(lat, lon)
+// categories: Comma separated string of categories
+func GetPlacesByCoordsService(ctx context.Context, categories, lat, lon string) (places geoapify.Places, err error) {
+	places, err = geoapify.GetPlacesAroundCoords(categories, lat, lon)
 	if err != nil {
 		return places, err
 	}

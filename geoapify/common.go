@@ -11,6 +11,49 @@ import (
 const GEOAPIFY_SITE = "https://api.geoapify.com"
 const CategoriesString = `accommodation,activity,airport,commercial,catering,education,childcare,entertainment,healthcare,heritage,highway,leisure,man_made,natural,national_park,office,parking,pet,power,production,railway,rental,service,tourism,religion,camping,amenity,beach,adult,airport,building,ski,sport,public_transport,administrative,postal_code,political,low_emission_zone,populated_place,production`
 
+var Categories = [...]string{
+	"accommodation",
+	"activity",
+	"airport",
+	"commercial",
+	"catering",
+	"education",
+	"childcare",
+	"entertainment",
+	"healthcare",
+	"heritage",
+	"highway",
+	"leisure",
+	"man_made",
+	"natural",
+	"national_park",
+	"office",
+	"parking",
+	"pet",
+	"power",
+	"production",
+	"railway",
+	"rental",
+	"service",
+	"tourism",
+	"religion",
+	"camping",
+	"amenity",
+	"beach",
+	"adult",
+	"airport",
+	"building",
+	"ski",
+	"sport",
+	"public_transport",
+	"administrative",
+	"postal_code",
+	"political",
+	"low_emission_zone",
+	"populated_place",
+	"production",
+}
+
 var apiKey string
 
 func SetGeoapifyKey(extApiKey string) {
