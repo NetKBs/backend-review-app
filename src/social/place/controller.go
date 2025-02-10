@@ -55,3 +55,22 @@ func getPlacesController(c *gin.Context) {
 		"data": data,
 	})
 }
+
+func getAutocompleteResultController(c *gin.Context) {
+	var autocompleteDTO AutocompleteResponseDTO
+
+	text := c.Query("text")
+	if text == "" {
+		c.Status(http.StatusBadRequest)
+	}
+
+	autocompleteDTO, err := GetAutocompleteResultService(c.Request.Context(), text)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "failed to get place details",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, autocompleteDTO)
+}
