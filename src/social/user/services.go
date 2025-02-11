@@ -79,7 +79,7 @@ func GetUserByIdService(id uint) (userDTO UserResponseDTO, err error) {
 	if err != nil {
 		return userDTO, err
 	}
-	visitedCount, err := visited.GetVisitedCount(id)
+	visitedCount, err := visited.GetVisitedCountService(id)
 	if err != nil {
 		return userDTO, err
 	}
