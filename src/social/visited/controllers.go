@@ -1,6 +1,7 @@
 package visited
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -55,7 +56,7 @@ func CreateVisitedPlace(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid place ID"})
 		return
 	}
-
+	fmt.Print(userID, placeID)
 	err = CreateVisitedPlaceService(uint(userID), uint(placeID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create visited place record"})

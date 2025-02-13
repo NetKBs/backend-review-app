@@ -28,12 +28,13 @@ func CreateVisitedPlaceRepository(userID, placeID uint) error {
 	db := config.DB
 
 	var user schema.User
-	if err := db.First(&user, userID).Error; err != nil {
+
+	if err := db.Where("id = ?", userID).First(&user).Error; err != nil {
 		return err
 	}
 
 	var place schema.Place
-	if err := db.First(&place, placeID).Error; err != nil {
+	if err := db.Where("id = ?", placeID).First(&place).Error; err != nil {
 		return err
 	}
 
@@ -48,12 +49,13 @@ func DeleteVisitedPlaceRepository(userID, placeID uint) error {
 	db := config.DB
 
 	var user schema.User
-	if err := db.First(&user, userID).Error; err != nil {
+
+	if err := db.Where("id = ?", userID).First(&user).Error; err != nil {
 		return err
 	}
 
 	var place schema.Place
-	if err := db.First(&place, placeID).Error; err != nil {
+	if err := db.Where("id = ?", placeID).First(&place).Error; err != nil {
 		return err
 	}
 
