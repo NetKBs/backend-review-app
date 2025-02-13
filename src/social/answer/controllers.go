@@ -1,4 +1,4 @@
-package comment
+package answer
 
 import (
 	"net/http"
@@ -7,50 +7,50 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetCommentByIdController(c *gin.Context) {
+func GetAwnsersByCommentIdController(c *gin.Context) {
 	id := c.Param("id")
-	commentId, err := strconv.ParseUint(id, 10, 64)
+	ansCommentsId, err := strconv.ParseUint(id, 10, 64)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
 
-	comment, err := GetCommentByIdService(uint(commentId))
+	answer, err := GetAnswersByCommentIdService(uint(ansCommentsId))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"comment": comment})
+	c.JSON(http.StatusOK, gin.H{"Answer": answer})
 }
 
-func GetCommentsByIdReviewController(c *gin.Context) {
+func GetAnswerByIdController(c *gin.Context) {
 	id := c.Param("id")
-	revcommentsId, err := strconv.ParseUint(id, 10, 64)
+	answerId, err := strconv.ParseUint(id, 10, 64)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
 
-	comment, err := GetCommentsByIdReviewService(uint(revcommentsId))
+	answer, err := GetAnswerByIdService(uint(answerId))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"comments": comment})
+	c.JSON(http.StatusOK, gin.H{"Answer": answer})
 }
 
-func CreateCommentController(c *gin.Context) {
-	CommentCreateDTO := CommentCreateDTO{}
-	if err := c.ShouldBind(&CommentCreateDTO); err != nil {
+func CreateAnswerController(c *gin.Context) {
+	AnswerCreateDTO := AnswerCreateDTO{}
+	if err := c.ShouldBind(&AnswerCreateDTO); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	id, err := CreateCommentService(CommentCreateDTO)
+	id, err := CreateAnswerService(AnswerCreateDTO)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -59,42 +59,42 @@ func CreateCommentController(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"id": id})
 }
 
-func UpdateCommentController(c *gin.Context) {
-	CommentUpdateDTO := CommentUpdateDTO{}
-	if err := c.ShouldBindJSON(&CommentUpdateDTO); err != nil {
+func UpdateAnswerController(c *gin.Context) {
+	AnswerUpdateDTO := AnswerUpdateDTO{}
+	if err := c.ShouldBindJSON(&AnswerUpdateDTO); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	id := c.Param("id")
-	commentId, err := strconv.ParseUint(id, 10, 64)
+	answerId, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
 
-	err = UpdateCommentService(uint(commentId), CommentUpdateDTO)
+	err = UpdateAnswerService(uint(answerId), AnswerUpdateDTO)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Comment updated successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Answer updated successfully"})
 }
 
-func DeleteCommentController(c *gin.Context) {
+func DeleteAnswerController(c *gin.Context) {
 	id := c.Param("id")
-	commentId, err := strconv.ParseUint(id, 10, 64)
+	answerId, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
 
-	err = DeleteCommentService(uint(commentId))
+	err = DeleteAnswerService(uint(answerId))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Comment deleted successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Answer deleted successfully"})
 }
