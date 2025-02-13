@@ -11,8 +11,12 @@ const placesV2 = "/v2/places?"
 const radius = "50"
 const placesLimit = "10"
 
-func GetPlacesAroundCoords(lat, lon string) (places Places, err error) {
-	categories := "categories=" + CategoriesString
+func GetPlacesAroundCoords(cat, lat, lon string) (places Places, err error) {
+	catString := cat
+	if cat == "" {
+		catString = CategoriesString
+	}
+	categories := "categories=" + catString
 	filter := "filter=circle:" + lat + "," + lon + "," + radius
 	bias := "bias=proximity:" + lat + "," + lon
 	limit := "limit=" + placesLimit
