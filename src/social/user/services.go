@@ -100,7 +100,7 @@ func GetUserByFieldService(field string, value interface{}) (userDTO UserRespons
 	if err != nil {
 		return userDTO, err
 	}
-	visitedCount, err := visited.GetVisitedCount(user.ID)
+	visitedCount, err := visited.GetVisitedCountService(user.ID)
 	if err != nil {
 		return userDTO, err
 	}
