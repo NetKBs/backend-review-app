@@ -107,6 +107,10 @@ func InferenceService(lat string, lon string, image *multipart.FileHeader) (geoa
 		return nil, err
 	}
 
+	if placesDetails == nil {
+		return []geoapify.Place{}, nil
+	}
+
 	if len(analysis.VisibleText) > 0 {
 		var matchedPlaces []geoapify.Place
 		var otherPlaces []geoapify.Place
