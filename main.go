@@ -16,6 +16,7 @@ import (
 	"github.com/NetKBs/backend-reviewapp/src/social/place"
 	"github.com/NetKBs/backend-reviewapp/src/social/review"
 	"github.com/NetKBs/backend-reviewapp/src/social/user"
+	"github.com/NetKBs/backend-reviewapp/src/social/visited"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -47,5 +48,6 @@ func main() {
 	answer.RegisterRoutes(r)
 	resend.RegisterRoutes(r)
 
+	visited.RegisterRoutes(r)
 	r.Run()
 }

@@ -20,7 +20,7 @@ type User struct {
 	ValidationCode   []ValidationCode `gorm:"foreignKey:UserId"`
 	Following        []User           `gorm:"many2many:follow;joinForeignKey:FollowerID;joinReferences:FollowedID"`
 	Followers        []User           `gorm:"many2many:follow;joinForeignKey:FollowedID;joinReferences:FollowerID"`
-	VisitedPlaces    []Place          `gorm:"many2many:place_visitors"`
+	VisitedPlaces    []Place          `gorm:"many2many:place_visitors;joinForeignKey:user_id;joinReferences:place_id"`
 	BookmarkedPlaces []Place          `gorm:"many2many:bookmark"`
 }
 
