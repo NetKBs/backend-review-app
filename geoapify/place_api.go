@@ -21,7 +21,6 @@ func GetPlacesAroundCoords(cat, lat, lon string) (places Places, err error) {
 	bias := "bias=proximity:" + lat + "," + lon
 	limit := "limit=" + placesLimit
 	url := GEOAPIFY_SITE + placesV2 + categories + "&" + filter + "&" + bias + "&" + limit + "&lang=es"
-	log.Println(url)
 	url += "&apiKey=" + apiKey
 
 	status, body, err := getJSON(url)
