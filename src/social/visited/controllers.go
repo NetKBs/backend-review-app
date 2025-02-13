@@ -1,7 +1,6 @@
 package visited
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -18,7 +17,7 @@ func GetVisitedCountController(c *gin.Context) {
 
 	count, err := GetVisitedCountService(uint(userID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get visited count"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -56,10 +55,10 @@ func CreateVisitedPlace(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid place ID"})
 		return
 	}
-	fmt.Print(userID, placeID)
+
 	err = CreateVisitedPlaceService(uint(userID), uint(placeID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create visited place record"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -83,7 +82,7 @@ func DeleteVisitedPlace(c *gin.Context) {
 
 	err = DeleteVisitedPlaceService(uint(userID), uint(placeID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete visited place record"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 

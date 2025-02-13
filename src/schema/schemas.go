@@ -6,23 +6,22 @@ import (
 
 type User struct {
 	gorm.Model
-	Username       string
-	AvatarUrl      *string
-	DisplayName    string
-	Email          string
-	Password       string
-	Verified       bool             `gorm:"default:false"`
-	Reviews        []Review         `gorm:"foreignKey:UserId"`
-	Comments       []Comment        `gorm:"foreignKey:UserId"`
-	Answers        []Answer         `gorm:"foreignKey:UserId"`
-	Reactions      []Reaction       `gorm:"foreignKey:UserId"`
-	Notifications  []Notification   `gorm:"foreignKey:UserId"`
-	ValidationCode []ValidationCode `gorm:"foreignKey:UserId"`
-	Following      []User           `gorm:"many2many:follow;joinForeignKey:FollowerID;joinReferences:FollowedID"`
-	Followers      []User           `gorm:"many2many:follow;joinForeignKey:FollowedID;joinReferences:FollowerID"`
-	VisitedPlaces  []Place          `gorm:"many2many:place_visitors;joinForeignKey:user_id;joinReferences:place_id"`
-	//VisitedPlaces    []Place          `gorm:"many2many:place_visitors"`
-	BookmarkedPlaces []Place `gorm:"many2many:bookmark"`
+	Username         string
+	AvatarUrl        *string
+	DisplayName      string
+	Email            string
+	Password         string
+	Verified         bool             `gorm:"default:false"`
+	Reviews          []Review         `gorm:"foreignKey:UserId"`
+	Comments         []Comment        `gorm:"foreignKey:UserId"`
+	Answers          []Answer         `gorm:"foreignKey:UserId"`
+	Reactions        []Reaction       `gorm:"foreignKey:UserId"`
+	Notifications    []Notification   `gorm:"foreignKey:UserId"`
+	ValidationCode   []ValidationCode `gorm:"foreignKey:UserId"`
+	Following        []User           `gorm:"many2many:follow;joinForeignKey:FollowerID;joinReferences:FollowedID"`
+	Followers        []User           `gorm:"many2many:follow;joinForeignKey:FollowedID;joinReferences:FollowerID"`
+	VisitedPlaces    []Place          `gorm:"many2many:place_visitors;joinForeignKey:user_id;joinReferences:place_id"`
+	BookmarkedPlaces []Place          `gorm:"many2many:bookmark"`
 }
 
 type Reaction struct {
