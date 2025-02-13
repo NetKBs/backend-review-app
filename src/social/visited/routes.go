@@ -1,6 +1,7 @@
 package visited
 
 import (
+	"github.com/NetKBs/backend-reviewapp/src/middlewares"
 	"github.com/gin-gonic/gin"
 )
 
