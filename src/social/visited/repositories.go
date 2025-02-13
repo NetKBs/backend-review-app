@@ -1,8 +1,11 @@
 package visited
 
 import (
+	"errors"
+
 	"github.com/NetKBs/backend-reviewapp/config"
 	"github.com/NetKBs/backend-reviewapp/src/schema"
+	"gorm.io/gorm"
 )
 
 func GetVisitedCountRepository(userId uint) (visitedCount uint, err error) {
@@ -30,11 +33,17 @@ func CreateVisitedPlaceRepository(userID, placeID uint) error {
 	var user schema.User
 
 	if err := db.Where("id = ?", userID).First(&user).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return errors.New("user not found")
+		}
 		return err
 	}
 
 	var place schema.Place
 	if err := db.Where("id = ?", placeID).First(&place).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return errors.New("place not found")
+		}
 		return err
 	}
 
@@ -51,11 +60,17 @@ func DeleteVisitedPlaceRepository(userID, placeID uint) error {
 	var user schema.User
 
 	if err := db.Where("id = ?", userID).First(&user).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return errors.New("user not found")
+		}
 		return err
 	}
 
 	var place schema.Place
 	if err := db.Where("id = ?", placeID).First(&place).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return errors.New("place not found")
+		}
 		return err
 	}
 
