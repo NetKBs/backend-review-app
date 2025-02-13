@@ -20,11 +20,12 @@ func InferenceController(c *gin.Context) {
 		return
 	}
 
-	if err := InferenceService(lat, lon, image); err != nil {
+	places, err := InferenceService(lat, lon, image)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "success"})
+	c.JSON(http.StatusOK, places)
 
 }
