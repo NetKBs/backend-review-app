@@ -24,7 +24,7 @@ func GetReviewByIdController(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"review": review})
+	c.JSON(http.StatusOK, gin.H{"data": review})
 }
 
 func GetReviewsByUserIdController(c *gin.Context) {
@@ -50,13 +50,13 @@ func GetReviewsByUserIdController(c *gin.Context) {
 		return
 	}
 
-	reviews, err := GetReviewsByUserIdService(uint(userId), limit, page)
+	reviews, pagination, err := GetReviewsByUserIdService(uint(userId), limit, page)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"reviews": reviews})
+	c.JSON(http.StatusOK, gin.H{"data": reviews, "pagination": pagination})
 }
 
 func CreateReviewController(c *gin.Context) {

@@ -1,10 +1,10 @@
 package schema
 
 type Pagination struct {
-	CurrentPage     int  `json:"currentPage"`
-	PageSize        int  `json:"pageSize"`
-	TotalItems      int  `json:"totalItems"`
-	TotalPages      int  `json:"totalPages"`
-	HasNextPage     bool `json:"hasNextPage"`
-	HasPreviousPage bool `json:"hasPreviousPage"`
+	TotalItems  int64 `json:"total_items"`
+	TotalPages  int   `json:"total_pages"`
+	Limit       int   `json:"limit"`
+	Page        int   `json:"page"`
+	HasNextPage bool  `json:"has_next_page"`
+	HasPrevPage bool  `json:"has_prev_page"`
 }
