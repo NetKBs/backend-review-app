@@ -46,6 +46,29 @@ func GetReviewByIdService(id uint) (reviewDTO ReviewResponseDTO, err error) {
 	return reviewDTO, nil
 }
 
+func GetReviewsByUserIdService(userId uint, limit int, page int) ([]ReviewResponseDTO, error) {
+	reviews, err := GetReviewsByUserIdRepository(userId, limit, page)
+	if err != nil {
+		return nil, err
+	}
+
+	var reviewDTOs []ReviewResponseDTO
+	for _, review := range reviews {
+		reviewDTO := ReviewResponseDTO{
+			ID:        review.ID,
+			UserId:    review.UserId,
+			PlaceId:   review.PlaceId,
+			Text:      review.Text,
+			Rate:      review.Rate,
+			CreatedAt: review.CreatedAt.String(),
+			UpdatedAt: review.UpdatedAt.String(),
+		}
+		reviewDTOs = append(reviewDTOs, reviewDTO)
+	}
+
+	return reviewDTOs, nil
+}
+
 func CreateReviewService(review ReviewCreateDTO) (id uint, err error) {
 	reviewSchema := schema.Review{UserId: review.UserId, PlaceId: review.PlaceId, Text: review.Text, Rate: review.Rate}
 	id, err = CreateReviewRepository(reviewSchema)

@@ -14,6 +14,20 @@ func GetReviewByIdRepository(id uint) (review schema.Review, err error) {
 	return review, nil
 }
 
+func GetReviewsByUserIdRepository(userId uint, limit int, page int) ([]schema.Review, error) {
+	var reviews []schema.Review
+	offset := (page - 1) * limit
+
+	db := config.DB
+
+	err := db.Where("user_id = ?", userId).Limit(limit).Offset(offset).Find(&reviews).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return reviews, nil
+}
+
 func CreateReviewRepository(review schema.Review) (id uint, err error) {
 	db := config.DB
 

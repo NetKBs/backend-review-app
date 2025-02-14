@@ -27,6 +27,38 @@ func GetReviewByIdController(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"review": review})
 }
 
+func GetReviewsByUserIdController(c *gin.Context) {
+	userIdStr := c.Param("id")
+	userId, err := strconv.ParseUint(userIdStr, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid User ID"})
+		return
+	}
+
+	limitStr := c.DefaultQuery("limit", "10")
+	pageStr := c.DefaultQuery("page", "1")
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit value"})
+		return
+	}
+
+	page, err := strconv.Atoi(pageStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page value"})
+		return
+	}
+
+	reviews, err := GetReviewsByUserIdService(uint(userId), limit, page)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"reviews": reviews})
+}
+
 func CreateReviewController(c *gin.Context) {
 	ReviewCreateDTO := ReviewCreateDTO{}
 	if err := c.ShouldBind(&ReviewCreateDTO); err != nil {
