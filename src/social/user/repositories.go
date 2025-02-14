@@ -9,11 +9,11 @@ import (
 	"github.com/NetKBs/backend-reviewapp/src/schema"
 )
 
-func UserExistsByFieldRepository(field string, value interface{}) (bool, error) {
+func UserExistsByFieldRepository(field string, value interface{}, excludeId uint) (bool, error) {
 	db := config.DB
 	var count int64
-	query := fmt.Sprintf("%s = ? AND deleted_at IS NULL", field)
-	if err := db.Model(&schema.User{}).Where(query, value).Count(&count).Error; err != nil {
+	query := fmt.Sprintf("%s = ? AND id != ? AND deleted_at IS NULL", field)
+	if err := db.Model(&schema.User{}).Where(query, value, excludeId).Count(&count).Error; err != nil {
 		return false, err
 	}
 	return count > 0, nil
@@ -85,42 +85,42 @@ func UpdateAvatarUserRepository(id uint, avatarPath string) (string, error) {
 	return "", nil
 }
 
-func UpdateEmailUserRepository(id uint, email string) error {
+func UpdateUserRepository(id uint, userDTO UserUpdateDTO, avatarPath string) (string, error) {
 	db := config.DB
+	var oldAvatar sql.NullString
 
-	if err := db.Where("id = ?", id).First(&schema.User{}).Error; err != nil {
-		return err
-	}
-	if err := db.Model(&schema.User{}).Where("id = ?", id).Update("email", email).Error; err != nil {
-		return err
-	}
-	return nil
-}
+	user := schema.User{}
 
-func UpdateUserDisplayNameRepository(id uint, userDTO UserUpdateDisplayNameDTO) error {
-	db := config.DB
-
-	if err := db.Where("id = ?", id).First(&schema.User{}).Error; err != nil {
-		return err
-	}
-	if err := db.Model(&schema.User{}).Where("id = ?", id).Update("display_name", userDTO.DisplayName).Error; err != nil {
-		return err
+	if err := db.Where("id = ?", id).First(&user).Error; err != nil {
+		return "", err
 	}
 
-	return nil
-}
-
-func UpdateUserUsernameRepository(id uint, userDTO UserUpdateUsernameDTO) error {
-	db := config.DB
-
-	if err := db.Where("id = ?", id).First(&schema.User{}).Error; err != nil {
-		return err
-	}
-	if err := db.Model(&schema.User{}).Where("id = ?", id).Update("username", userDTO.Username).Error; err != nil {
-		return err
+	if avatarPath != "" {
+		if err := db.Model(&schema.User{}).Where("id = ?", id).Pluck("avatar_url", &oldAvatar).Error; err != nil {
+			return "", err
+		}
+		user.AvatarUrl = &avatarPath
 	}
 
-	return nil
+	if userDTO.DisplayName != "" {
+		user.DisplayName = userDTO.DisplayName
+	}
+	if userDTO.Username != "" {
+		user.Username = userDTO.Username
+	}
+	if userDTO.Email != "" {
+		user.Email = userDTO.Email
+	}
+
+	if err := db.Save(&user).Error; err != nil {
+		return "", err
+	}
+
+	if avatarPath != "" && oldAvatar.Valid {
+		return oldAvatar.String, nil
+	}
+
+	return "", nil
 }
 
 func DeleteUserbyIDRepository(id uint) (string, error) {

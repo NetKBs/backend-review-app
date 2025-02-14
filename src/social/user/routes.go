@@ -16,11 +16,8 @@ func RegisterRoutes(router *gin.Engine) {
 		users.POST("/", CreateUserController)
 		users.DELETE("/:id", middlewares.AuthMiddleware(), DeleteUserbyIdController)
 
-		users.PUT("/displayname/:id", middlewares.AuthMiddleware(), UpdateUserDisplayNameController)
-		users.PUT("/username/:id", middlewares.AuthMiddleware(), UpdateUsernameUserController)
-		users.PUT("/password/:id", middlewares.AuthMiddleware(), UpdatePasswordUserController)
-		users.PUT("/avatar/:id", middlewares.AuthMiddleware(), UpdateAvatarUserController)
-		users.PUT("/email/:id", middlewares.AuthMiddleware(), UpdateEmailUserController)
+		users.PUT("/:id", middlewares.AuthMiddleware(), UpdateUserController)                  // General user update
+		users.PUT("/password/:id", middlewares.AuthMiddleware(), UpdatePasswordUserController) // Password update
 
 		users.GET("/:id/followers", middlewares.AuthMiddleware(), follow.GetFollowersByIdController)
 		users.GET("/:id/followings", middlewares.AuthMiddleware(), follow.GetFollowingsByIdController)

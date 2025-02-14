@@ -23,19 +23,19 @@ func HandleUniquenessError(type_ string) error {
 	}
 }
 
-func UserExistsByFieldService(field string, value interface{}) (bool, error) {
-	return UserExistsByFieldRepository(field, value)
+func UserExistsByFieldService(field string, value interface{}, excludeId uint) (bool, error) {
+	return UserExistsByFieldRepository(field, value, excludeId)
 }
 
 func CreateUserService(userDTO UserCreateDTO) (uint, error) {
 
-	if exists, err := UserExistsByFieldService("username", userDTO.Username); err != nil {
+	if exists, err := UserExistsByFieldService("username", userDTO.Username, 0); err != nil {
 		return 0, err
 	} else if exists {
 		return 0, HandleUniquenessError("username")
 	}
 
-	if exists, err := UserExistsByFieldService("email", userDTO.Email); err != nil {
+	if exists, err := UserExistsByFieldService("email", userDTO.Email, 0); err != nil {
 		return 0, err
 	} else if exists {
 		return 0, HandleUniquenessError("email")
@@ -162,27 +162,34 @@ func UpdateAvatarUserService(id uint, newAvatarPath string) error {
 	return nil
 }
 
-func UpdateEmailUserService(id uint, email UserUpdateEmailDTO) error {
-	if exists, err := UserExistsByFieldService("email", email.Email); err != nil {
-		return err
-	} else if exists {
-		return HandleUniquenessError("email")
+func UpdateUserService(id uint, userDTO UserUpdateDTO, avatarPath string) error {
+
+	if userDTO.Username != "" {
+		if exists, err := UserExistsByFieldService("username", userDTO.Username, id); err != nil {
+			return err
+		} else if exists {
+			return HandleUniquenessError("username")
+		}
 	}
 
-	return UpdateEmailUserRepository(id, email.Email)
-}
-
-func UpdateUserDisplayNameService(id uint, userDTO UserUpdateDisplayNameDTO) error {
-	return UpdateUserDisplayNameRepository(id, userDTO)
-}
-
-func UpdateUserUsernameService(id uint, userDTO UserUpdateUsernameDTO) error {
-	if exists, err := UserExistsByFieldService("username", userDTO.Username); err != nil {
-		return err
-	} else if exists {
-		return HandleUniquenessError("username")
+	if userDTO.Email != "" {
+		if exists, err := UserExistsByFieldService("email", userDTO.Email, id); err != nil {
+			return err
+		} else if exists {
+			return HandleUniquenessError("email")
+		}
 	}
-	return UpdateUserUsernameRepository(id, userDTO)
+
+	oldAvatar, err := UpdateUserRepository(id, userDTO, avatarPath)
+	if err != nil {
+		return err
+	}
+
+	if avatarPath != "" && oldAvatar != "" {
+		image.DeleteImageByPathService(oldAvatar)
+	}
+	return nil
+
 }
 
 func DeleteUserByIdService(id uint) error {
