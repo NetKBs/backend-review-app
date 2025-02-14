@@ -2,6 +2,7 @@ package user
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/NetKBs/backend-reviewapp/config"
@@ -13,33 +14,6 @@ func UserExistsByFieldRepository(field string, value interface{}) (bool, error) 
 	var count int64
 	query := fmt.Sprintf("%s = ? AND deleted_at IS NULL", field)
 	if err := db.Model(&schema.User{}).Where(query, value).Count(&count).Error; err != nil {
-		return false, err
-	}
-	return count > 0, nil
-}
-
-func UserExistsByUsernameRepository(username string) (bool, error) {
-	db := config.DB
-	var count int64
-	if err := db.Model(&schema.User{}).Where("username = ? AND deleted_at IS NULL", username).Count(&count).Error; err != nil {
-		return false, err
-	}
-	return count > 0, nil
-}
-
-func UserExistsByEmailRepository(email string) (bool, error) {
-	db := config.DB
-	var count int64
-	if err := db.Model(&schema.User{}).Where("email = ? AND deleted_at IS NULL", email).Count(&count).Error; err != nil {
-		return false, err
-	}
-	return count > 0, nil
-}
-
-func UserExistsByIdRepository(id uint) (bool, error) {
-	db := config.DB
-	var count int64
-	if err := db.Model(&schema.User{}).Where("id = ? AND deleted_at IS NULL", id).Count(&count).Error; err != nil {
 		return false, err
 	}
 	return count > 0, nil
@@ -74,6 +48,15 @@ func GetUserByIdRepository(id uint) (user schema.User, err error) {
 		return user, err
 	}
 
+	return user, nil
+}
+
+func GetUserByUsernameRepository(username string) (user schema.User, err error) {
+	db := config.DB
+
+	if err = db.Where("username = ?", username).First(&user).Error; err != nil {
+		return user, err
+	}
 	return user, nil
 }
 
@@ -153,4 +136,18 @@ func DeleteUserbyIDRepository(id uint) (string, error) {
 	}
 
 	return *user.AvatarUrl, nil
+}
+
+func VerifyUserRepository(id uint) error {
+	db := config.DB
+
+	if err := db.Where("id = ?", id).First(&schema.User{}).Error; err != nil {
+		return errors.New("user not found")
+	}
+
+	if err := db.Model(&schema.User{}).Where("id = ?", id).Update("verified", true).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

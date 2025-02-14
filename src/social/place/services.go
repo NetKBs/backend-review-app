@@ -43,3 +43,28 @@ func GetPlaceDetailsByCoordsService(ctx context.Context, lat string, lon string)
 	}
 	return placeDetailsDTO, err
 }
+
+// categories: slice of strings
+func GetPlacesByCoordsService(ctx context.Context, categories []string, lat, lon string) (places geoapify.Places, err error) {
+	var catString string
+	for i, v := range categories {
+		if i == 0 {
+			catString = v
+		} else {
+			catString = catString + "," + v
+		}
+	}
+	places, err = geoapify.GetPlacesAroundCoords(catString, lat, lon)
+	if err != nil {
+		return places, err
+	}
+	return places, err
+}
+
+func GetAutocompleteResultService(ctx context.Context, text string) (autocompleteResult AutocompleteResponseDTO, err error) {
+	geocodings, err := geoapify.GetAutocompleteResponse(text)
+	autocompleteResult.Query = text
+	autocompleteResult.Result = geocodings
+
+	return autocompleteResult, err
+}

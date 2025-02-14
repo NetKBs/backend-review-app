@@ -8,6 +8,7 @@ type UserResponseDTO struct {
 	AvatarUrl     string `json:"avatar_url"`
 	DisplayName   string `json:"display_name"`
 	Email         string `json:"email"`
+	Verified      bool   `json:"verified"`
 	Followers     uint   `json:"followers"`
 	Following     uint   `json:"following"`
 	Bookmarks     uint   `json:"bookmarks"`

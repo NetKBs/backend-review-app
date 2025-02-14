@@ -8,6 +8,7 @@ type inputDTO struct {
 }
 
 type Claims struct {
+	UserId   uint   `json:"user_id" binding:"required"`
 	Username string `json:"username"`
 	jwt.StandardClaims
 }
