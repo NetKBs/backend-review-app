@@ -1,6 +1,8 @@
 package review
 
 import (
+	"math"
+
 	"github.com/NetKBs/backend-reviewapp/src/image"
 	"github.com/NetKBs/backend-reviewapp/src/schema"
 	"github.com/NetKBs/backend-reviewapp/src/social/comment"
@@ -44,6 +46,42 @@ func GetReviewByIdService(id uint) (reviewDTO ReviewResponseDTO, err error) {
 	}
 
 	return reviewDTO, nil
+}
+
+func GetReviewsByUserIdService(userId uint, limit int, page int) ([]ReviewResponseDTO, schema.Pagination, error) {
+	reviews, total, err := GetReviewsByUserIdRepository(userId, limit, page)
+	if err != nil {
+		return []ReviewResponseDTO{}, schema.Pagination{}, err
+	}
+
+	var reviewDTOs []ReviewResponseDTO
+	for _, review := range reviews {
+		reviewDTO := ReviewResponseDTO{
+			ID:        review.ID,
+			UserId:    review.UserId,
+			PlaceId:   review.PlaceId,
+			Text:      review.Text,
+			Rate:      review.Rate,
+			CreatedAt: review.CreatedAt.String(),
+			UpdatedAt: review.UpdatedAt.String(),
+		}
+		reviewDTOs = append(reviewDTOs, reviewDTO)
+	}
+
+	totalPages := int(math.Ceil(float64(total) / float64(limit)))
+	hasNextPage := page < totalPages
+	hasPreviousPage := page > 1
+
+	pagination := schema.Pagination{
+		TotalItems:  total,
+		TotalPages:  totalPages,
+		Limit:       limit,
+		Page:        page,
+		HasNextPage: hasNextPage,
+		HasPrevPage: hasPreviousPage,
+	}
+
+	return reviewDTOs, pagination, nil
 }
 
 func CreateReviewService(review ReviewCreateDTO) (id uint, err error) {
