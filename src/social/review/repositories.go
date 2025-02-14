@@ -24,7 +24,7 @@ func GetReviewsByUserIdRepository(userId uint, limit int, page int) ([]schema.Re
 		return nil, 0, err
 	}
 
-	err := db.Where("user_id = ?", userId).Limit(limit).Offset(offset).Find(&reviews).Error
+	err := db.Where("user_id = ?", userId).Limit(limit).Offset(offset).Order("created_at DESC").Find(&reviews).Error
 	if err != nil {
 		return nil, 0, err
 	}
