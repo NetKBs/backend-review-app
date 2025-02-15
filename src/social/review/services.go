@@ -56,12 +56,31 @@ func GetReviewsByUserIdService(userId uint, limit int, page int) ([]ReviewRespon
 
 	var reviewDTOs []ReviewResponseDTO
 	for _, review := range reviews {
+		reactionsCount, err := reaction.GetReactionsCountService(userId, "review")
+		if err != nil {
+			return []ReviewResponseDTO{}, schema.Pagination{}, err
+		}
+
+		commentsCount, err := comment.GetCommentsReviewCountService(userId)
+		if err != nil {
+			return []ReviewResponseDTO{}, schema.Pagination{}, err
+		}
+
+		imagesPath, err := image.GetReviewImagesService(userId)
+		if err != nil {
+			return []ReviewResponseDTO{}, schema.Pagination{}, err
+		}
+
 		reviewDTO := ReviewResponseDTO{
 			ID:        review.ID,
 			UserId:    review.UserId,
 			PlaceId:   review.PlaceId,
 			Text:      review.Text,
 			Rate:      review.Rate,
+			Likes:     reactionsCount["likes"],
+			Dislikes:  reactionsCount["dislikes"],
+			Comments:  commentsCount,
+			Images:    imagesPath,
 			CreatedAt: review.CreatedAt.String(),
 			UpdatedAt: review.UpdatedAt.String(),
 		}
@@ -82,6 +101,48 @@ func GetReviewsByUserIdService(userId uint, limit int, page int) ([]ReviewRespon
 	}
 
 	return reviewDTOs, pagination, nil
+}
+
+func GetReviewsByUserIdRepositoryCursorService(userId uint, limit int, lastID uint) ([]ReviewResponseDTO, error) {
+	reviews, err := GetReviewsByUserIdRepositoryCursor(userId, limit, lastID)
+	if err != nil {
+		return []ReviewResponseDTO{}, err
+	}
+
+	var reviewDTOs []ReviewResponseDTO
+	for _, review := range reviews {
+		reactionsCount, err := reaction.GetReactionsCountService(userId, "review")
+		if err != nil {
+			return []ReviewResponseDTO{}, err
+		}
+
+		commentsCount, err := comment.GetCommentsReviewCountService(userId)
+		if err != nil {
+			return []ReviewResponseDTO{}, err
+		}
+
+		imagesPath, err := image.GetReviewImagesService(userId)
+		if err != nil {
+			return []ReviewResponseDTO{}, err
+		}
+
+		reviewDTO := ReviewResponseDTO{
+			ID:        review.ID,
+			UserId:    review.UserId,
+			PlaceId:   review.PlaceId,
+			Text:      review.Text,
+			Rate:      review.Rate,
+			Likes:     reactionsCount["likes"],
+			Dislikes:  reactionsCount["dislikes"],
+			Comments:  commentsCount,
+			Images:    imagesPath,
+			CreatedAt: review.CreatedAt.String(),
+			UpdatedAt: review.UpdatedAt.String(),
+		}
+		reviewDTOs = append(reviewDTOs, reviewDTO)
+	}
+
+	return reviewDTOs, nil
 }
 
 func CreateReviewService(review ReviewCreateDTO) (id uint, err error) {

@@ -32,6 +32,21 @@ func GetReviewsByUserIdRepository(userId uint, limit int, page int) ([]schema.Re
 	return reviews, total, nil
 }
 
+func GetReviewsByUserIdRepositoryCursor(userId uint, limit int, lastID uint) ([]schema.Review, error) {
+	var reviews []schema.Review
+	db := config.DB
+
+	query := db.Where("user_id = ?", userId)
+
+	if lastID > 0 {
+		query = query.Where("id < ?", lastID)
+	}
+
+	err := query.Order("id DESC").Limit(limit).Find(&reviews).Error
+
+	return reviews, err
+}
+
 func CreateReviewRepository(review schema.Review) (id uint, err error) {
 	db := config.DB
 
