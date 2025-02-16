@@ -21,8 +21,8 @@ func GetPlaceDetailsById(params string) (pd PlaceDetails, err error) {
 	return pd, err
 }
 
-func GetPlaceDetailsByCoord(lat string, lon string) (pd PlaceDetails, err error) {
-	coords := "lat=" + lat + "&lon=" + lon
+func GetPlaceDetailsByCoord(lon, lat string) (pd PlaceDetails, err error) {
+	coords := "lon=" + lon + "&lat=" + lat
 	url := GEOAPIFY_SITE + placeDetailsV2 + coords + "&lang=es"
 	fmt.Println(url)
 	url += "&apiKey=" + apiKey

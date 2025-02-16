@@ -11,14 +11,14 @@ const placesV2 = "/v2/places?"
 const radius = "50"
 const placesLimit = "10"
 
-func GetPlacesAroundCoords(cat, lat, lon string) (places Places, err error) {
+func GetPlacesAroundCoords(cat, lon, lat string) (places Places, err error) {
 	catString := cat
 	if cat == "" {
 		catString = CategoriesString
 	}
 	categories := "categories=" + catString
-	filter := "filter=circle:" + lat + "," + lon + "," + radius
-	bias := "bias=proximity:" + lat + "," + lon
+	filter := "filter=circle:" + lon + "," + lat + "," + radius
+	bias := "bias=proximity:" + lon + "," + lat
 	limit := "limit=" + placesLimit
 	url := GEOAPIFY_SITE + placesV2 + categories + "&" + filter + "&" + bias + "&" + limit + "&lang=es"
 	url += "&apiKey=" + apiKey
