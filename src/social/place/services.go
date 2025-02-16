@@ -2,6 +2,7 @@ package place
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/NetKBs/backend-reviewapp/geoapify"
 )
@@ -45,7 +46,7 @@ func GetPlaceDetailsByCoordsService(ctx context.Context, lon, lat string) (place
 }
 
 // categories: slice of strings
-func GetPlacesByCoordsService(ctx context.Context, categories []string, lon, lat string) (places geoapify.Places, err error) {
+func GetPlacesByCoordsService(ctx context.Context, categories []string, lon, lat string) (places PlacesResponseDTO, err error) {
 	var catString string
 	for i, v := range categories {
 		if i == 0 {
@@ -54,9 +55,18 @@ func GetPlacesByCoordsService(ctx context.Context, categories []string, lon, lat
 			catString = catString + "," + v
 		}
 	}
-	places, err = geoapify.GetPlacesAroundCoords(catString, lon, lat)
+	placesRaw, err := geoapify.GetPlacesAroundCoords(catString, lon, lat)
+
 	if err != nil {
 		return places, err
+	}
+
+	centerLon, _ := strconv.ParseFloat(lon, 64)
+	centerLat, _ := strconv.ParseFloat(lat, 64)
+	places = PlacesResponseDTO{
+		CenterLon: centerLon,
+		CenterLan: centerLat,
+		Data:      placesRaw,
 	}
 	return places, err
 }
