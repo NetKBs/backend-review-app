@@ -1,6 +1,8 @@
 package review
 
-import "mime/multipart"
+import (
+	"mime/multipart"
+)
 
 type ReviewResponseDTO struct {
 	ID        uint     `json:"id"`

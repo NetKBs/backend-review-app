@@ -30,7 +30,8 @@ Para ejecutar este proyecto, necesitarás agregar las siguientes variables de en
 * `PORT`: Puerto en el que se ejecutará el servidor.
 * `TURSO_DATABASE_URL` *(opcional)*: URL de la base de datos de TURSO.
 * `TURSO_AUTH_TOKEN` *(opcional)*: Token de autenticación para la base de datos de TURSO.
-* `GEOAPIFY_KEY`: Key del mapa
+* `GEOAPIFY_KEY`: Key de la API de Geoapify. Usado para lugares y mapa
+* `GEMINI_KEY`: Key para la API de Gemini. Usado en el proceso de inferencia
 * `SECRET_KEY`: Key usada para generar las firmas del jwt
 * `RESEND_APIKEY` Key para el resend
 * `RESEND_DOMAIN` Nombre del dominio privado

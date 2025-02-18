@@ -19,29 +19,20 @@ type UserResponseDTO struct {
 
 type UserCreateDTO struct {
 	Username    string                `form:"username" binding:"required"`
-	AvatarImage *multipart.FileHeader `form:"avatar_image"`
+	AvatarImage *multipart.FileHeader `form:"avatar_image" binding:"required"`
 	DisplayName string                `form:"display_name" binding:"required"`
 	Email       string                `form:"email" binding:"required"`
 	Password    string                `form:"password" binding:"required"`
 }
 
+type UserUpdateDTO struct {
+	DisplayName string                `form:"display_name"`
+	Username    string                `form:"username"`
+	Email       string                `form:"email"`
+	AvatarImage *multipart.FileHeader `form:"avatar_image"`
+}
+
 type UserUpdatePasswordDTO struct {
 	OldPassword string `json:"old_password" binding:"required"`
 	NewPassword string `json:"new_password" binding:"required"`
-}
-
-type UserUpdateAvatarDTO struct {
-	AvatarImage *multipart.FileHeader `form:"avatar_image" binding:"required"`
-}
-
-type UserUpdateEmailDTO struct {
-	Email string `json:"email" binding:"required"`
-}
-
-type UserUpdateDisplayNameDTO struct {
-	DisplayName string `json:"display_name" binding:"required"`
-}
-
-type UserUpdateUsernameDTO struct {
-	Username string `json:"username" binding:"required"`
 }

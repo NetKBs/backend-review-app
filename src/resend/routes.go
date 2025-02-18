@@ -1,12 +1,16 @@
 package resend
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/NetKBs/backend-reviewapp/src/middlewares"
+	"github.com/gin-gonic/gin"
+)
 
 func RegisterRoutes(router *gin.Engine) {
-	verify := router.Group("/Register")
+	resend := router.Group("/code", middlewares.AuthMiddleware())
 	{
 
-		verify.POST("/Register", verifyController)
+		resend.POST("/generate", generateVerificationCodeController)
+		resend.POST("/verify", verifyVerificationCodeController)
 
 	}
 }

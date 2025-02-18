@@ -7,13 +7,18 @@ import (
 	"github.com/NetKBs/backend-reviewapp/config"
 	"github.com/NetKBs/backend-reviewapp/geoapify"
 	"github.com/NetKBs/backend-reviewapp/src/image"
+	"github.com/NetKBs/backend-reviewapp/src/inference"
 	"github.com/NetKBs/backend-reviewapp/src/maps"
+	"github.com/NetKBs/backend-reviewapp/src/resend"
+	"github.com/NetKBs/backend-reviewapp/src/social/answer"
 	"github.com/NetKBs/backend-reviewapp/src/social/auth"
 	"github.com/NetKBs/backend-reviewapp/src/social/comment"
+	"github.com/NetKBs/backend-reviewapp/src/social/feed"
 	"github.com/NetKBs/backend-reviewapp/src/social/place"
 	"github.com/NetKBs/backend-reviewapp/src/social/reaction"
 	"github.com/NetKBs/backend-reviewapp/src/social/review"
 	"github.com/NetKBs/backend-reviewapp/src/social/user"
+	"github.com/NetKBs/backend-reviewapp/src/social/visited"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -42,5 +47,11 @@ func main() {
 	user.RegisterRoutes(r)
 	comment.RegisterRoutes(r)
 	reaction.RegisterRoutes(r)
+	inference.RegisterRoutes(r)
+	answer.RegisterRoutes(r)
+	resend.RegisterRoutes(r)
+	feed.RegisterRoutes(r)
+	visited.RegisterRoutes(r)
+
 	r.Run()
 }
