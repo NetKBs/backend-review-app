@@ -102,7 +102,7 @@ func InferenceService(lat string, lon string, image *multipart.FileHeader) (geoa
 	log.Println(analysis)
 
 	ctx := context.TODO()
-	placesDTO, err := place.GetPlacesByCoordsService(ctx, analysis.Categories, lat, lon)
+	placesDTO, err := place.GetPlacesByCoordsService(ctx, analysis.Categories, lon, lat)
 	if err != nil {
 		return nil, err
 	}
