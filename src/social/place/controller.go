@@ -10,10 +10,20 @@ func getPlaceDetailsController(c *gin.Context) {
 	placeDetailsDTO := PlaceDetailsResponseDTO{}
 	var err error
 
+	mapsId := c.Query("mapsId")
 	lon := c.Query("lon")
 	lat := c.Query("lat")
 	if lat != "" && lon != "" {
 		placeDetailsDTO, err = GetPlaceDetailsByCoordsService(c.Request.Context(), lon, lat)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "failed to get place details",
+			})
+			return
+		}
+
+	} else if mapsId != "" {
+		placeDetailsDTO, err = GetPlaceDetailsByMapsIdService(c.Request.Context(), mapsId)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"message": "failed to get place details",
