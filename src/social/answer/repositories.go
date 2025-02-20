@@ -5,6 +5,16 @@ import (
 	"github.com/NetKBs/backend-reviewapp/src/schema"
 )
 
+func GetCountAnswersByCommentIdRepository(id uint) (uint, error) {
+	db := config.DB
+	var count int64
+	if err := db.Model(&schema.Answer{}).Where("`comment_id` = ?", id).Count(&count).Error; err != nil {
+		return uint(count), err
+	}
+
+	return uint(count), nil
+}
+
 func GetAnswersByCommentIdRepository(id uint) (commentAnswers []schema.Answer, err error) {
 	db := config.DB
 

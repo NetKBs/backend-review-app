@@ -2,6 +2,10 @@ package answer
 
 import "github.com/NetKBs/backend-reviewapp/src/schema"
 
+func GetCountAnswersByCommentIdService(id uint) (count uint, err error) {
+	return GetCountAnswersByCommentIdRepository(id)
+}
+
 func GetAnswersByCommentIdService(id uint) (answerComments []AnswerResponseDTO, err error) {
 	anscomments, err := GetAnswersByCommentIdRepository(id)
 	if err != nil {
