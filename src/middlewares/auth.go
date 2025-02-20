@@ -3,6 +3,7 @@ package middlewares
 import (
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/NetKBs/backend-reviewapp/config"
@@ -12,6 +13,10 @@ import (
 )
 
 var jwtKey = []byte(os.Getenv("SECRECT_KEY"))
+
+var ignoreRoutesOfVerification = []string{
+	"/users/id/:id",
+}
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -46,6 +51,19 @@ func AuthMiddleware() gin.HandlerFunc {
 			username := claims["username"].(string)
 			c.Set("userId", userID)
 			c.Set("username", username)
+
+			// Ignore verification for some routes
+			for _, route := range ignoreRoutesOfVerification {
+				if c.FullPath() == route {
+					paramId := c.Param("id")
+					userIdStr := strconv.Itoa(int(userID))
+
+					if paramId == userIdStr {
+						c.Next()
+						return
+					}
+				}
+			}
 
 			var verified bool
 			if err := config.DB.Model(&schema.User{}).Where("id = ?", userID).Pluck("verified", &verified).Error; err != nil {

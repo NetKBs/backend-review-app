@@ -31,3 +31,7 @@ go.work.sum
 /Pruebas
 # Air config file
 .air.toml
+
+# Log files
+*.log
+/tmp
