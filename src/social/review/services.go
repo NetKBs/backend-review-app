@@ -9,6 +9,10 @@ import (
 	"github.com/NetKBs/backend-reviewapp/src/social/reaction"
 )
 
+func GetCountReviewsByUserIdService(id uint) (uint, error) {
+	return GetCountReviewsByUserIdRepository(id)
+}
+
 func GetReviewByIdService(id uint) (reviewDTO ReviewResponseDTO, err error) {
 
 	review, err := GetReviewByIdRepository(id)

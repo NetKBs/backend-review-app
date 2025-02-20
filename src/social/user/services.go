@@ -8,6 +8,7 @@ import (
 	"github.com/NetKBs/backend-reviewapp/src/schema"
 	"github.com/NetKBs/backend-reviewapp/src/social/bookmark"
 	"github.com/NetKBs/backend-reviewapp/src/social/follow"
+	"github.com/NetKBs/backend-reviewapp/src/social/review"
 	"github.com/NetKBs/backend-reviewapp/src/social/visited"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -104,6 +105,10 @@ func GetUserByFieldService(field string, value interface{}) (userDTO UserRespons
 	if err != nil {
 		return userDTO, err
 	}
+	reviewsCount, err := review.GetCountReviewsByUserIdService(user.ID)
+	if err != nil {
+		return userDTO, err
+	}
 
 	userDTO = UserResponseDTO{
 		ID:            user.ID,
@@ -116,6 +121,7 @@ func GetUserByFieldService(field string, value interface{}) (userDTO UserRespons
 		Following:     followingCount,
 		Bookmarks:     bookmarkCount,
 		VisitedPlaces: visitedCount,
+		Reviews:       reviewsCount,
 		CreatedAt:     user.CreatedAt.String(),
 		UpdatedAt:     user.UpdatedAt.String(),
 	}
