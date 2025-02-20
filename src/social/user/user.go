@@ -8,6 +8,7 @@ type UserResponseDTO struct {
 	AvatarUrl     string `json:"avatar_url"`
 	DisplayName   string `json:"display_name"`
 	Email         string `json:"email"`
+	Description   string `json:"description"`
 	Verified      bool   `json:"verified"`
 	Followers     uint   `json:"followers"`
 	Following     uint   `json:"following"`
@@ -23,6 +24,7 @@ type UserCreateDTO struct {
 	AvatarImage *multipart.FileHeader `form:"avatar_image" binding:"required"`
 	DisplayName string                `form:"display_name" binding:"required"`
 	Email       string                `form:"email" binding:"required"`
+	Description string                `form:"description" binding:"max=200"`
 	Password    string                `form:"password" binding:"required"`
 }
 
@@ -30,6 +32,7 @@ type UserUpdateDTO struct {
 	DisplayName string                `form:"display_name"`
 	Username    string                `form:"username"`
 	Email       string                `form:"email"`
+	Description string                `form:"description"`
 	AvatarImage *multipart.FileHeader `form:"avatar_image"`
 }
 
