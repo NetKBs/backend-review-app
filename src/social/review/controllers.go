@@ -66,7 +66,13 @@ func CreateReviewController(c *gin.Context) {
 		return
 	}
 
-	id, err := CreateReviewService(ReviewCreateDTO)
+	userId, ok := c.Get("userId")
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user ID"})
+		return
+	}
+
+	id, err := CreateReviewService(ReviewCreateDTO, userId.(uint))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

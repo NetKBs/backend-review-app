@@ -13,7 +13,6 @@ type CommentResponseDTO struct {
 }
 
 type CommentCreateDTO struct {
-	UserId   uint   `json:"user_id" binding:"required"`
 	ReviewId uint   `json:"review_id" binding:"required"`
 	Text     string `json:"text" binding:"required"`
 }

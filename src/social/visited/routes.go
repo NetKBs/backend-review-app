@@ -10,7 +10,8 @@ func RegisterRoutes(router *gin.Engine) {
 	{
 		visited.GET("/count/:user_id", GetVisitedCountController)
 		visited.GET("/visitors/:place_id", GetVisitorsCount)
-		visited.POST("/:user_id/:place_id", CreateVisitedPlace)
-		visited.DELETE("/:user_id/:place_id", DeleteVisitedPlace)
+
+		visited.POST("/", CreateVisitedPlace)
+		visited.DELETE("/", DeleteVisitedPlace)
 	}
 }

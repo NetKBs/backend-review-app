@@ -58,8 +58,8 @@ func GetAnswerByIdService(id uint) (answerDTO AnswerResponseDTO, err error) {
 	return answerDTO, nil
 }
 
-func CreateAnswerService(answer AnswerCreateDTO) (id uint, err error) {
-	answerSchema := schema.Answer{UserId: answer.UserID, CommentId: answer.CommentID, Text: answer.Text}
+func CreateAnswerService(answer AnswerCreateDTO, userId uint) (id uint, err error) {
+	answerSchema := schema.Answer{UserId: userId, CommentId: answer.CommentID, Text: answer.Text}
 
 	id, err = CreateAnswerByIdRepository(answerSchema)
 	if err != nil {

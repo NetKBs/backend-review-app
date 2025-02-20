@@ -82,8 +82,8 @@ func GetCommentByIdService(id uint) (commentDTO CommentResponseDTO, err error) {
 	return commentDTO, nil
 }
 
-func CreateCommentService(comment CommentCreateDTO) (id uint, err error) {
-	commentSchema := schema.Comment{UserId: comment.UserId, ReviewId: comment.ReviewId, Text: comment.Text}
+func CreateCommentService(comment CommentCreateDTO, userId uint) (id uint, err error) {
+	commentSchema := schema.Comment{UserId: userId, ReviewId: comment.ReviewId, Text: comment.Text}
 
 	id, err = CreateCommentRepository(commentSchema)
 	if err != nil {

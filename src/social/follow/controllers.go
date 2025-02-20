@@ -42,19 +42,20 @@ func GetFollowingsByIdController(c *gin.Context) {
 }
 
 func CreateFollowController(c *gin.Context) {
-	follower_id, err := strconv.ParseUint(c.Param("follower_id"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid follower_id"})
+
+	var input InputFollow
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	followed_id, err := strconv.ParseUint(c.Param("followed_id"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid followed_id"})
+	followerId, ok := c.Get("userId")
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user ID"})
 		return
 	}
 
-	if err := CreateFollowService(uint(follower_id), uint(followed_id)); err != nil {
+	if err := CreateFollowService(followerId.(uint), input.FollowedId); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -63,19 +64,19 @@ func CreateFollowController(c *gin.Context) {
 }
 
 func DeleteFollowController(c *gin.Context) {
-	follower_id, err := strconv.ParseUint(c.Param("follower_id"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid follower_id"})
+	var input InputFollow
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	followed_id, err := strconv.ParseUint(c.Param("followed_id"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid followed_id"})
+	followerId, ok := c.Get("userId")
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user ID"})
 		return
 	}
 
-	if err := DeleteFollowService(uint(follower_id), uint(followed_id)); err != nil {
+	if err := DeleteFollowService(followerId.(uint), input.FollowedId); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

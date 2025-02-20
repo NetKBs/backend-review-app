@@ -12,7 +12,6 @@ type AnswerResponseDTO struct {
 }
 
 type AnswerCreateDTO struct {
-	UserID    uint   `json:"user_id" binding:"required"`
 	CommentID uint   `json:"comment_id" binding:"required"`
 	Text      string `json:"text" binding:"required"`
 }

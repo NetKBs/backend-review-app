@@ -50,7 +50,13 @@ func CreateCommentController(c *gin.Context) {
 		return
 	}
 
-	id, err := CreateCommentService(CommentCreateDTO)
+	userId, ok := c.Get("userId")
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user ID"})
+		return
+	}
+
+	id, err := CreateCommentService(CommentCreateDTO, userId.(uint))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
