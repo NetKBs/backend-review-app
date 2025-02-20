@@ -11,7 +11,7 @@ func RegisterRoutes(router *gin.Engine) {
 	resend := router.Group("/code", middlewares.AuthMiddleware())
 	{
 
-		resend.POST("/generate", middlewares.RateLimitMiddleware(1, 1*time.Minute), generateVerificationCodeController)
+		resend.POST("/generate", middlewares.RateLimitMiddleware(2, 1*time.Minute), generateVerificationCodeController)
 		resend.POST("/verify", verifyVerificationCodeController)
 
 	}
