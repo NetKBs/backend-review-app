@@ -5,6 +5,16 @@ import (
 	"github.com/NetKBs/backend-reviewapp/src/schema"
 )
 
+func GetCountReviewsByUserIdRepository(id uint) (uint, error) {
+	db := config.DB
+	var count int64
+
+	if err := db.Model(&schema.Review{}).Where("user_id = ?", id).Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return uint(count), nil
+}
+
 func GetReviewByIdRepository(id uint) (review schema.Review, err error) {
 	db := config.DB
 

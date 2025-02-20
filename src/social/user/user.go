@@ -13,6 +13,7 @@ type UserResponseDTO struct {
 	Following     uint   `json:"following"`
 	Bookmarks     uint   `json:"bookmarks"`
 	VisitedPlaces uint   `json:"visited_places"`
+	Reviews       uint   `json:"reviews"`
 	CreatedAt     string `json:"created_at"`
 	UpdatedAt     string `json:"updated_at"`
 }
