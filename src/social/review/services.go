@@ -149,8 +149,8 @@ func GetReviewsByUserIdRepositoryCursorService(userId uint, limit int, lastID ui
 	return reviewDTOs, nil
 }
 
-func CreateReviewService(review ReviewCreateDTO) (id uint, err error) {
-	reviewSchema := schema.Review{UserId: review.UserId, PlaceId: review.PlaceId, Text: review.Text, Rate: review.Rate}
+func CreateReviewService(review ReviewCreateDTO, userId uint) (id uint, err error) {
+	reviewSchema := schema.Review{UserId: userId, PlaceId: review.PlaceId, Text: review.Text, Rate: review.Rate}
 	id, err = CreateReviewRepository(reviewSchema)
 	if err != nil {
 		return id, err

@@ -42,22 +42,18 @@ func GetVisitorsCount(c *gin.Context) {
 }
 
 func CreateVisitedPlace(c *gin.Context) {
-	userIDStr := c.Param("user_id")
-	userID, err := strconv.Atoi(userIDStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+	var input VisitedPlaceInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
+	userId, ok := c.Get("userId")
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user ID"})
 		return
 	}
 
-	placeIDStr := c.Param("place_id")
-	placeID, err := strconv.Atoi(placeIDStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid place ID"})
-		return
-	}
-
-	err = CreateVisitedPlaceService(uint(userID), uint(placeID))
-	if err != nil {
+	if err := CreateVisitedPlaceService(userId.(uint), input.PlaceId); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -66,22 +62,18 @@ func CreateVisitedPlace(c *gin.Context) {
 }
 
 func DeleteVisitedPlace(c *gin.Context) {
-	userIDStr := c.Param("user_id")
-	userID, err := strconv.Atoi(userIDStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+	var input VisitedPlaceInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
+	userId, ok := c.Get("userId")
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user ID"})
 		return
 	}
 
-	placeIDStr := c.Param("place_id")
-	placeID, err := strconv.Atoi(placeIDStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid place ID"})
-		return
-	}
-
-	err = DeleteVisitedPlaceService(uint(userID), uint(placeID))
-	if err != nil {
+	if err := DeleteVisitedPlaceService(userId.(uint), input.PlaceId); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

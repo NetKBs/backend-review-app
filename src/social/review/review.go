@@ -19,7 +19,6 @@ type ReviewResponseDTO struct {
 }
 
 type ReviewCreateDTO struct {
-	UserId  uint                    `form:"user_id" binding:"required"`
 	PlaceId uint                    `form:"place_id" binding:"required"`
 	Text    string                  `form:"text" binding:"required"`
 	Rate    uint                    `form:"rate" binding:"required,oneof=1 2 3 4 5"`

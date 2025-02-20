@@ -13,7 +13,13 @@ func generateVerificationCodeController(c *gin.Context) {
 		return
 	}
 
-	if err := sendVerificationEmailService(input.UserId, input.Email); err != nil {
+	userId, ok := c.Get("userId")
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user ID"})
+		return
+	}
+
+	if err := sendVerificationEmailService(userId.(uint), input.Email); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -31,7 +37,13 @@ func verifyVerificationCodeController(c *gin.Context) {
 		return
 	}
 
-	if err := verifyVerificationCodeService(verifyInput.UserId, verifyInput.Code); err != nil {
+	userId, ok := c.Get("userId")
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user ID"})
+		return
+	}
+
+	if err := verifyVerificationCodeService(userId.(uint), verifyInput.Code); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

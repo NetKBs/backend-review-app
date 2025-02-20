@@ -25,7 +25,7 @@ func RegisterRoutes(router *gin.Engine) {
 
 	follows := users.Group("/follow")
 	{
-		follows.POST("/:follower_id/:followed_id", middlewares.AuthMiddleware(), follow.CreateFollowController)
-		follows.DELETE("/:follower_id/:followed_id", middlewares.AuthMiddleware(), follow.DeleteFollowController)
+		follows.POST("/", middlewares.AuthMiddleware(), follow.CreateFollowController)
+		follows.DELETE("/", middlewares.AuthMiddleware(), follow.DeleteFollowController)
 	}
 }

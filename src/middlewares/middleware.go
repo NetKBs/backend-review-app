@@ -44,7 +44,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			userID := uint(claims["user_id"].(float64))
 			username := claims["username"].(string)
-			c.Set("user_id", userID)
+			c.Set("userId", userID)
 			c.Set("username", username)
 
 			var verified bool
