@@ -11,6 +11,7 @@ type User struct {
 	DisplayName      string
 	Email            string
 	Password         string
+	Description      string
 	Verified         bool             `gorm:"default:false"`
 	Reviews          []Review         `gorm:"foreignKey:UserId"`
 	Comments         []Comment        `gorm:"foreignKey:UserId"`

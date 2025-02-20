@@ -69,6 +69,7 @@ func seedDatabase(db *gorm.DB) error {
 			DisplayName: gofakeit.Name(),
 			Email:       gofakeit.Email(),
 			Password:    string(userPassword),
+			Description: gofakeit.Sentence(gofakeit.Number(10, 20)),
 			Verified:    true,
 		}
 		users = append(users, user)

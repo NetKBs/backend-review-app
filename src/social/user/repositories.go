@@ -111,11 +111,15 @@ func UpdateUserRepository(id uint, userDTO UserUpdateDTO, avatarPath string) (st
 	if userDTO.Email != "" {
 		user.Email = userDTO.Email
 	}
+	if userDTO.Description != "" {
+		user.Description = userDTO.Description
+	}
 
 	if err := db.Save(&user).Error; err != nil {
 		return "", err
 	}
 
+	// avatar path updated
 	if avatarPath != "" && oldAvatar.Valid {
 		return oldAvatar.String, nil
 	}

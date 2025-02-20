@@ -51,6 +51,7 @@ func CreateUserService(userDTO UserCreateDTO) (uint, error) {
 		Username:    userDTO.Username,
 		DisplayName: userDTO.DisplayName,
 		Email:       userDTO.Email,
+		Description: userDTO.Description,
 		Password:    string(hashedPassword),
 	}
 
@@ -116,6 +117,7 @@ func GetUserByFieldService(field string, value interface{}) (userDTO UserRespons
 		AvatarUrl:     getStringPointer(user.AvatarUrl),
 		DisplayName:   user.DisplayName,
 		Email:         user.Email,
+		Description:   user.Description,
 		Verified:      user.Verified,
 		Followers:     followersCount,
 		Following:     followingCount,
