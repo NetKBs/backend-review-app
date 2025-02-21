@@ -42,6 +42,23 @@ func GetReviewsByUserIdRepository(userId uint, limit int, page int) ([]schema.Re
 	return reviews, total, nil
 }
 
+func GetReviewsByPlaceIdRepository(placeId uint, limit int, page int) ([]schema.Review, int64, error) {
+	var reviews []schema.Review
+	offset := (page - 1) * limit
+	db := config.DB
+
+	var total int64
+	if err := db.Model(&schema.Review{}).Where("place_id = ?", placeId).Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	if err := db.Where("place_id = ?", placeId).Limit(limit).Offset(offset).Order("created_at DESC").Find(&reviews).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return reviews, total, nil
+}
+
 func GetReviewsByUserIdRepositoryCursor(userId uint, limit int, lastID uint) ([]schema.Review, error) {
 	var reviews []schema.Review
 	db := config.DB

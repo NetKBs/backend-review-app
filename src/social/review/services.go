@@ -52,10 +52,69 @@ func GetReviewByIdService(id uint) (reviewDTO ReviewResponseDTO, err error) {
 	return reviewDTO, nil
 }
 
+func GetReviewsByPlaceIdService(placeId uint, limit int, page int) ([]ReviewResponseDTO, schema.Pagination, error) {
+	reviews, total, err := GetReviewsByPlaceIdRepository(placeId, limit, page)
+	if err != nil {
+		return []ReviewResponseDTO{}, schema.Pagination{}, err
+	} else if total == 0 {
+		return []ReviewResponseDTO{}, schema.Pagination{}, nil
+	}
+
+	var reviewDTOs []ReviewResponseDTO
+	for _, review := range reviews {
+		reactionsCount, err := reaction.GetReactionsCountService(review.UserId, "review")
+		if err != nil {
+			return []ReviewResponseDTO{}, schema.Pagination{}, err
+		}
+
+		commentsCount, err := comment.GetCommentsReviewCountService(review.UserId)
+		if err != nil {
+			return []ReviewResponseDTO{}, schema.Pagination{}, err
+		}
+
+		imagesPath, err := image.GetReviewImagesService(review.UserId)
+		if err != nil {
+			return []ReviewResponseDTO{}, schema.Pagination{}, err
+		}
+
+		reviewDTO := ReviewResponseDTO{
+			ID:        review.ID,
+			UserId:    review.UserId,
+			PlaceId:   review.PlaceId,
+			Text:      review.Text,
+			Rate:      review.Rate,
+			Likes:     reactionsCount["likes"],
+			Dislikes:  reactionsCount["dislikes"],
+			Comments:  commentsCount,
+			Images:    imagesPath,
+			CreatedAt: review.CreatedAt.String(),
+			UpdatedAt: review.UpdatedAt.String(),
+		}
+		reviewDTOs = append(reviewDTOs, reviewDTO)
+	}
+
+	totalPages := int(math.Ceil(float64(total) / float64(limit)))
+	hasNextPage := page < totalPages
+	hasPreviousPage := page > 1
+
+	pagination := schema.Pagination{
+		TotalItems:  total,
+		TotalPages:  totalPages,
+		Limit:       limit,
+		Page:        page,
+		HasNextPage: hasNextPage,
+		HasPrevPage: hasPreviousPage,
+	}
+
+	return reviewDTOs, pagination, nil
+}
+
 func GetReviewsByUserIdService(userId uint, limit int, page int) ([]ReviewResponseDTO, schema.Pagination, error) {
 	reviews, total, err := GetReviewsByUserIdRepository(userId, limit, page)
 	if err != nil {
 		return []ReviewResponseDTO{}, schema.Pagination{}, err
+	} else if total == 0 {
+		return []ReviewResponseDTO{}, schema.Pagination{}, nil
 	}
 
 	var reviewDTOs []ReviewResponseDTO
