@@ -2,9 +2,39 @@ package place
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
+
+func getPlaceDetailsByPlaceIdController(c *gin.Context) {
+	var err error
+	placeIdStr := c.Param("place_id")
+	placeId, err := strconv.Atoi(placeIdStr)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "invalid place_id",
+		})
+		return
+	}
+
+	placeDetailsDTO, err := GetPlaceDetailsByPlaceIdService(c.Request.Context(), placeId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	if placeDetailsDTO == (PlaceDetailsResponseDTO{}) {
+		c.Status(http.StatusBadRequest)
+	}
+	data := []PlaceDetailsResponseDTO{placeDetailsDTO}
+	c.JSON(http.StatusOK, gin.H{
+		"data": data,
+	})
+
+}
 
 func getPlaceDetailsController(c *gin.Context) {
 	placeDetailsDTO := PlaceDetailsResponseDTO{}

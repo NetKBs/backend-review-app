@@ -26,6 +26,26 @@ func GetPlaceDetailsByMapsIdService(ctx context.Context, mapsID string) (placeDe
 	return placeDetailsDTO, err
 }
 
+func GetPlaceDetailsByPlaceIdService(ctx context.Context, placeId int) (placeDetailsDTO PlaceDetailsResponseDTO, err error) {
+
+	place, err := findPlaceByPlaceIdRepo(placeId)
+	if err != nil {
+		return placeDetailsDTO, err
+	}
+	placeDetails, err := geoapify.GetPlaceDetailsById(place.MapsId)
+	if err != nil {
+		return placeDetailsDTO, err
+	}
+
+	placeDetailsDTO = PlaceDetailsResponseDTO{
+		ID:        place.ID,
+		Details:   placeDetails,
+		CreatedAt: place.CreatedAt.String(),
+		UpdatedAt: place.UpdatedAt.String(),
+	}
+	return placeDetailsDTO, err
+}
+
 func GetPlaceDetailsByCoordsService(ctx context.Context, lon, lat string) (placeDetailsDTO PlaceDetailsResponseDTO, err error) {
 	placeDetails, err := geoapify.GetPlaceDetailsByCoord(lon, lat)
 	if err != nil {

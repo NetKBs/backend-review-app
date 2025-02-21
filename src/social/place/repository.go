@@ -23,3 +23,13 @@ func findPlaceByMapsIdRepo(mapsID string) (place schema.Place, err error) {
 	}
 	return place, nil
 }
+
+func findPlaceByPlaceIdRepo(placeId int) (place schema.Place, err error) {
+	db := config.DB
+	place = schema.Place{}
+
+	if err := db.First(&place, placeId).Error; err != nil {
+		return schema.Place{}, err
+	}
+	return place, nil
+}
