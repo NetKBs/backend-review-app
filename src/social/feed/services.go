@@ -13,7 +13,7 @@ func GetFeedService(userId uint, limit int, cursor string) ([]review.ReviewRespo
 		return nil, "", err
 	}
 
-	var allReviews []review.ReviewResponseDTO
+	var allReviews = []review.ReviewResponseDTO{}
 	var lastID uint = 0
 
 	if cursor != "" {
