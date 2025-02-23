@@ -62,17 +62,17 @@ func GetReviewsByPlaceIdService(placeId uint, limit int, page int) ([]ReviewResp
 
 	var reviewDTOs []ReviewResponseDTO
 	for _, review := range reviews {
-		reactionsCount, err := reaction.GetReactionsCountService(review.UserId, "review")
+		reactionsCount, err := reaction.GetReactionsCountService(review.ID, "review")
 		if err != nil {
 			return []ReviewResponseDTO{}, schema.Pagination{}, err
 		}
 
-		commentsCount, err := comment.GetCommentsReviewCountService(review.UserId)
+		commentsCount, err := comment.GetCommentsReviewCountService(review.ID)
 		if err != nil {
 			return []ReviewResponseDTO{}, schema.Pagination{}, err
 		}
 
-		imagesPath, err := image.GetReviewImagesService(review.UserId)
+		imagesPath, err := image.GetReviewImagesService(review.ID)
 		if err != nil {
 			return []ReviewResponseDTO{}, schema.Pagination{}, err
 		}
@@ -119,17 +119,17 @@ func GetReviewsByUserIdService(userId uint, limit int, page int) ([]ReviewRespon
 
 	var reviewDTOs []ReviewResponseDTO
 	for _, review := range reviews {
-		reactionsCount, err := reaction.GetReactionsCountService(userId, "review")
+		reactionsCount, err := reaction.GetReactionsCountService(review.ID, "review")
 		if err != nil {
 			return []ReviewResponseDTO{}, schema.Pagination{}, err
 		}
 
-		commentsCount, err := comment.GetCommentsReviewCountService(userId)
+		commentsCount, err := comment.GetCommentsReviewCountService(review.ID)
 		if err != nil {
 			return []ReviewResponseDTO{}, schema.Pagination{}, err
 		}
 
-		imagesPath, err := image.GetReviewImagesService(userId)
+		imagesPath, err := image.GetReviewImagesService(review.ID)
 		if err != nil {
 			return []ReviewResponseDTO{}, schema.Pagination{}, err
 		}
@@ -174,17 +174,17 @@ func GetReviewsByUserIdRepositoryCursorService(userId uint, limit int, lastID ui
 
 	var reviewDTOs []ReviewResponseDTO
 	for _, review := range reviews {
-		reactionsCount, err := reaction.GetReactionsCountService(userId, "review")
+		reactionsCount, err := reaction.GetReactionsCountService(review.ID, "review")
 		if err != nil {
 			return []ReviewResponseDTO{}, err
 		}
 
-		commentsCount, err := comment.GetCommentsReviewCountService(userId)
+		commentsCount, err := comment.GetCommentsReviewCountService(review.ID)
 		if err != nil {
 			return []ReviewResponseDTO{}, err
 		}
 
-		imagesPath, err := image.GetReviewImagesService(userId)
+		imagesPath, err := image.GetReviewImagesService(review.ID)
 		if err != nil {
 			return []ReviewResponseDTO{}, err
 		}
