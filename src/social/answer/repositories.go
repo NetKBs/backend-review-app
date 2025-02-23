@@ -15,18 +15,18 @@ func GetCountAnswersByCommentIdRepository(id uint) (uint, error) {
 	return uint(count), nil
 }
 
-func GetAnswersByCommentIdRepository(id uint, limit int, page int) (commentAnswers []schema.Answer, total int64, err error) {
+func GetAnswersByCommentIdRepository(id uint, limit int, cursor uint) (commentAnswers []schema.Answer, err error) {
 	db := config.DB
-	offset := (page - 1) * limit
 
-	if err = db.Model(&schema.Answer{}).Where("`comment_id` = ?", id).Count(&total).Error; err != nil {
-		return commentAnswers, 0, err
+	query := db.Where("comment_id = ?", id).Order("id DESC").Limit(limit)
+	if cursor != 0 {
+		query = query.Where("id < ?", cursor)
 	}
 
-	if err = db.Where("comment_id = ?", id).Limit(limit).Offset(offset).Order("created_at DESC").Find(&commentAnswers).Error; err != nil {
-		return commentAnswers, 0, err
+	if err = query.Find(&commentAnswers).Error; err != nil {
+		return commentAnswers, err
 	}
-	return commentAnswers, total, nil
+	return commentAnswers, nil
 }
 
 func GetAnswerByIdRepository(id uint) (answer schema.Answer, err error) {

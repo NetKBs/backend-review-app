@@ -34,7 +34,7 @@ func GetCommentsByIdReviewController(c *gin.Context) {
 	}
 
 	limitStr := c.DefaultQuery("limit", "10")
-	pageStr := c.DefaultQuery("page", "1")
+	cursor := c.DefaultQuery("cursor", "0")
 
 	limit, err := strconv.Atoi(limitStr)
 	if err != nil {
@@ -42,19 +42,19 @@ func GetCommentsByIdReviewController(c *gin.Context) {
 		return
 	}
 
-	page, err := strconv.Atoi(pageStr)
+	cursorUint, err := strconv.ParseUint(cursor, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page value"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid cursor value"})
 		return
 	}
 
-	comments, pagination, err := GetCommentsByIdReviewService(uint(revcommentsId), limit, page)
+	comments, nextCursor, err := GetCommentsByIdReviewService(uint(revcommentsId), limit, uint(cursorUint))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"comments": comments, "pagination": pagination})
+	c.JSON(http.StatusOK, gin.H{"comments": comments, "next_cursor": nextCursor})
 }
 
 func CreateCommentController(c *gin.Context) {

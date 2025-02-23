@@ -1,6 +1,8 @@
 package comment
 
 import (
+	"strconv"
+
 	"github.com/NetKBs/backend-reviewapp/src/schema"
 	"github.com/NetKBs/backend-reviewapp/src/social/answer"
 	"github.com/NetKBs/backend-reviewapp/src/social/reaction"
@@ -16,23 +18,23 @@ func GetCommentsReviewCountService(id uint) (commentsCount uint, err error) {
 	return commentsCount, nil
 }
 
-func GetCommentsByIdReviewService(id uint, limit int, page int) ([]CommentResponseDTO, schema.Pagination, error) {
+func GetCommentsByIdReviewService(id uint, limit int, cursor uint) ([]CommentResponseDTO, string, error) {
 	reviewComments := []CommentResponseDTO{}
 
-	comments, total, err := GetCommentsByIdReviewRepository(id, limit, page)
+	comments, err := GetCommentsByIdReviewRepository(id, limit, cursor)
 	if err != nil {
-		return reviewComments, schema.Pagination{}, err
+		return reviewComments, "", err
 	}
 
 	for _, comment := range comments {
 		reactions, err := reaction.GetReactionsCountService(comment.ID, "comment")
 		if err != nil {
-			return reviewComments, schema.Pagination{}, err
+			return reviewComments, "", err
 		}
 
 		replies, err := answer.GetCountAnswersByCommentIdService(comment.ID)
 		if err != nil {
-			return reviewComments, schema.Pagination{}, err
+			return reviewComments, "", err
 		}
 
 		reviewComments = append(reviewComments, CommentResponseDTO{
@@ -48,17 +50,12 @@ func GetCommentsByIdReviewService(id uint, limit int, page int) ([]CommentRespon
 		})
 	}
 
-	totalPages := int((total + int64(limit) - 1) / int64(limit))
-	pagination := schema.Pagination{
-		TotalItems:  total,
-		TotalPages:  totalPages,
-		Limit:       limit,
-		Page:        page,
-		HasNextPage: page < totalPages,
-		HasPrevPage: page > 1,
+	nextCursor := ""
+	if len(comments) > 0 {
+		nextCursor = strconv.FormatUint(uint64(comments[len(comments)-1].ID), 10)
 	}
 
-	return reviewComments, pagination, nil
+	return reviewComments, nextCursor, nil
 }
 
 func GetCommentByIdService(id uint) (commentDTO CommentResponseDTO, err error) {
