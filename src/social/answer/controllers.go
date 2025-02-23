@@ -10,19 +10,33 @@ import (
 func GetAwnsersByCommentIdController(c *gin.Context) {
 	id := c.Param("id")
 	ansCommentsId, err := strconv.ParseUint(id, 10, 64)
-
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
 
-	answer, err := GetAnswersByCommentIdService(uint(ansCommentsId))
+	limitStr := c.DefaultQuery("limit", "10")
+	pageStr := c.DefaultQuery("page", "1")
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit value"})
+		return
+	}
+
+	page, err := strconv.Atoi(pageStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page value"})
+		return
+	}
+
+	answers, pagination, err := GetAnswersByCommentIdService(uint(ansCommentsId), limit, page)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"Answer": answer})
+	c.JSON(http.StatusOK, gin.H{"answers": answers, "pagination": pagination})
 }
 
 func GetAnswerByIdController(c *gin.Context) {

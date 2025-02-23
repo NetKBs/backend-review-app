@@ -16,13 +16,22 @@ func GetCommentsReviewCountRepository(id uint) (commentsCount uint, err error) {
 	return uint(_commentsCount), nil
 }
 
-func GetCommentsByIdReviewRepository(id uint) ([]schema.Comment, error) {
+func GetCommentsByIdReviewRepository(id uint, limit int, page int) ([]schema.Comment, int64, error) {
 	db := config.DB
-	reviewComments := []schema.Comment{}
-	if err := db.Table("comments").Where("review_id = ?", id).Find(&reviewComments).Error; err != nil {
-		return reviewComments, err
+	var comments []schema.Comment
+	var total int64
+
+	offset := (page - 1) * limit
+
+	if err := db.Model(&schema.Comment{}).Where("review_id = ?", id).Count(&total).Error; err != nil {
+		return comments, 0, err
 	}
-	return reviewComments, nil
+
+	if err := db.Where("review_id = ?", id).Limit(limit).Offset(offset).Order("created_at DESC").Find(&comments).Error; err != nil {
+		return comments, 0, err
+	}
+
+	return comments, total, nil
 }
 
 func GetCommentsByIdRepository(id uint) (comment schema.Comment, err error) {

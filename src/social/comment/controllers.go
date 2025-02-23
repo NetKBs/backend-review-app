@@ -28,19 +28,33 @@ func GetCommentByIdController(c *gin.Context) {
 func GetCommentsByIdReviewController(c *gin.Context) {
 	id := c.Param("id")
 	revcommentsId, err := strconv.ParseUint(id, 10, 64)
-
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
 
-	comment, err := GetCommentsByIdReviewService(uint(revcommentsId))
+	limitStr := c.DefaultQuery("limit", "10")
+	pageStr := c.DefaultQuery("page", "1")
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit value"})
+		return
+	}
+
+	page, err := strconv.Atoi(pageStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page value"})
+		return
+	}
+
+	comments, pagination, err := GetCommentsByIdReviewService(uint(revcommentsId), limit, page)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"comments": comment})
+	c.JSON(http.StatusOK, gin.H{"comments": comments, "pagination": pagination})
 }
 
 func CreateCommentController(c *gin.Context) {

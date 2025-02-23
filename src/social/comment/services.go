@@ -16,39 +16,49 @@ func GetCommentsReviewCountService(id uint) (commentsCount uint, err error) {
 	return commentsCount, nil
 }
 
-func GetCommentsByIdReviewService(id uint) ([]CommentResponseDTO, error) {
+func GetCommentsByIdReviewService(id uint, limit int, page int) ([]CommentResponseDTO, schema.Pagination, error) {
 	reviewComments := []CommentResponseDTO{}
 
-	revcomments, err := GetCommentsByIdReviewRepository(id)
+	comments, total, err := GetCommentsByIdReviewRepository(id, limit, page)
 	if err != nil {
-		return reviewComments, err
+		return reviewComments, schema.Pagination{}, err
 	}
 
-	for _, revcomment := range revcomments {
-
-		reactions, err := reaction.GetReactionsCountService(revcomment.ID, "comment")
+	for _, comment := range comments {
+		reactions, err := reaction.GetReactionsCountService(comment.ID, "comment")
 		if err != nil {
-			return reviewComments, err
+			return reviewComments, schema.Pagination{}, err
 		}
 
-		replies, err := answer.GetCountAnswersByCommentIdService(revcomment.ID)
+		replies, err := answer.GetCountAnswersByCommentIdService(comment.ID)
 		if err != nil {
-			return reviewComments, err
+			return reviewComments, schema.Pagination{}, err
 		}
 
 		reviewComments = append(reviewComments, CommentResponseDTO{
-			ID:        revcomment.ID,
-			UserId:    revcomment.UserId,
-			ReviewId:  revcomment.ReviewId,
-			Text:      revcomment.Text,
+			ID:        comment.ID,
+			UserId:    comment.UserId,
+			ReviewId:  comment.ReviewId,
+			Text:      comment.Text,
 			Likes:     reactions["likes"],
 			Dislikes:  reactions["dislikes"],
 			Answers:   replies,
-			CreatedAt: revcomment.CreatedAt.String(),
-			UpdatedAt: revcomment.UpdatedAt.String(),
+			CreatedAt: comment.CreatedAt.String(),
+			UpdatedAt: comment.UpdatedAt.String(),
 		})
 	}
-	return reviewComments, nil
+
+	totalPages := int((total + int64(limit) - 1) / int64(limit))
+	pagination := schema.Pagination{
+		TotalItems:  total,
+		TotalPages:  totalPages,
+		Limit:       limit,
+		Page:        page,
+		HasNextPage: page < totalPages,
+		HasPrevPage: page > 1,
+	}
+
+	return reviewComments, pagination, nil
 }
 
 func GetCommentByIdService(id uint) (commentDTO CommentResponseDTO, err error) {

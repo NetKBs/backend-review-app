@@ -9,34 +9,43 @@ func GetCountAnswersByCommentIdService(id uint) (count uint, err error) {
 	return GetCountAnswersByCommentIdRepository(id)
 }
 
-func GetAnswersByCommentIdService(id uint) (answerComments []AnswerResponseDTO, err error) {
-	anscomments, err := GetAnswersByCommentIdRepository(id)
+func GetAnswersByCommentIdService(id uint, limit int, page int) ([]AnswerResponseDTO, schema.Pagination, error) {
+	answerComments := []AnswerResponseDTO{}
+
+	answers, total, err := GetAnswersByCommentIdRepository(id, limit, page)
 	if err != nil {
-		return answerComments, err
+		return answerComments, schema.Pagination{}, err
 	}
 
-	if len(anscomments) == 0 {
-		return []AnswerResponseDTO{}, nil
-	}
+	for _, answer := range answers {
+		reactions, err := reaction.GetReactionsCountService(answer.ID, "answer")
+		if err != nil {
+			return answerComments, schema.Pagination{}, err
+		}
 
-	reactions, err := reaction.GetReactionsCountService(id, "answer")
-	if err != nil {
-		return answerComments, err
-	}
-
-	for _, anscomment := range anscomments {
 		answerComments = append(answerComments, AnswerResponseDTO{
-			ID:        anscomment.ID,
-			UserID:    anscomment.UserId,
-			CommentID: anscomment.CommentId,
-			Text:      anscomment.Text,
+			ID:        answer.ID,
+			UserID:    answer.UserId,
+			CommentID: answer.CommentId,
+			Text:      answer.Text,
 			Likes:     reactions["likes"],
 			Dislikes:  reactions["dislikes"],
-			CreatedAt: anscomment.CreatedAt.String(),
-			UpdatedAt: anscomment.UpdatedAt.String(),
+			CreatedAt: answer.CreatedAt.String(),
+			UpdatedAt: answer.UpdatedAt.String(),
 		})
 	}
-	return answerComments, nil
+
+	totalPages := int((total + int64(limit) - 1) / int64(limit))
+	pagination := schema.Pagination{
+		TotalItems:  total,
+		TotalPages:  totalPages,
+		Limit:       limit,
+		Page:        page,
+		HasNextPage: page < totalPages,
+		HasPrevPage: page > 1,
+	}
+
+	return answerComments, pagination, nil
 }
 
 func GetAnswerByIdService(id uint) (answerDTO AnswerResponseDTO, err error) {
