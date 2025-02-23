@@ -3,39 +3,65 @@ package feed
 import (
 	"strconv"
 
-	"github.com/NetKBs/backend-reviewapp/src/social/follow"
+	"github.com/NetKBs/backend-reviewapp/src/image"
+	"github.com/NetKBs/backend-reviewapp/src/social/comment"
+	"github.com/NetKBs/backend-reviewapp/src/social/reaction"
 	"github.com/NetKBs/backend-reviewapp/src/social/review"
 )
 
 func GetFeedService(userId uint, limit int, cursor string) ([]review.ReviewResponseDTO, string, error) {
-	followings, err := follow.GetFollowingsByIdRepository(userId)
-	if err != nil {
-		return nil, "", err
-	}
-
-	var allReviews = []review.ReviewResponseDTO{}
+	var reviewsResponse = []review.ReviewResponseDTO{}
 	var lastID uint = 0
 
 	if cursor != "" {
 		cursorUint, err := strconv.ParseUint(cursor, 10, 64)
 		if err != nil {
-			return nil, "", err
+			return reviewsResponse, "", err
 		}
 		lastID = uint(cursorUint)
 	}
 
-	for _, following := range followings {
-		reviews, err := review.GetReviewsByUserIdRepositoryCursorService(following.ID, limit, lastID)
+	reviews, err := GetFeedRepository(userId, limit, lastID)
+	if err != nil {
+		return reviewsResponse, "", err
+	}
+
+	for _, re := range reviews {
+		reactionsCount, err := reaction.GetReactionsCountService(re.UserId, "review")
 		if err != nil {
-			return nil, "", err
+			return reviewsResponse, "", err
 		}
-		allReviews = append(allReviews, reviews...)
+
+		commentsCount, err := comment.GetCommentsReviewCountService(re.UserId)
+		if err != nil {
+			return reviewsResponse, "", err
+		}
+
+		imagesPath, err := image.GetReviewImagesService(re.UserId)
+		if err != nil {
+			return reviewsResponse, "", err
+		}
+
+		reviewDTO := review.ReviewResponseDTO{
+			ID:        re.ID,
+			UserId:    re.UserId,
+			PlaceId:   re.PlaceId,
+			Text:      re.Text,
+			Rate:      re.Rate,
+			Likes:     reactionsCount["likes"],
+			Dislikes:  reactionsCount["dislikes"],
+			Comments:  commentsCount,
+			Images:    imagesPath,
+			CreatedAt: re.CreatedAt.String(),
+			UpdatedAt: re.UpdatedAt.String(),
+		}
+		reviewsResponse = append(reviewsResponse, reviewDTO)
 	}
 
 	nextCursor := ""
-	if len(allReviews) > 0 {
-		nextCursor = strconv.FormatUint(uint64(allReviews[len(allReviews)-1].ID), 10)
+	if len(reviews) > 0 {
+		nextCursor = strconv.FormatUint(uint64(reviews[len(reviews)-1].ID), 10)
 	}
 
-	return allReviews, nextCursor, nil
+	return reviewsResponse, nextCursor, nil
 }

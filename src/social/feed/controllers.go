@@ -1,6 +1,7 @@
 package feed
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -8,10 +9,11 @@ import (
 )
 
 func getFeedController(c *gin.Context) {
-	userIDStr := c.Param("user_id")
-	userID, err := strconv.Atoi(userIDStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+	var err error
+
+	userID, ok := c.Get("userId")
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user ID"})
 		return
 	}
 
@@ -27,12 +29,12 @@ func getFeedController(c *gin.Context) {
 
 	cursor := c.DefaultQuery("cursor", "")
 
-	feed, nextCursor, err := GetFeedService(uint(userID), limit, cursor)
+	feed, nextCursor, err := GetFeedService(userID.(uint), limit, cursor)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
+	fmt.Println(len(feed))
 	c.JSON(http.StatusOK, gin.H{"data": feed, "next_cursor": nextCursor})
 
 }
