@@ -6,7 +6,6 @@ import (
 
 	"github.com/NetKBs/backend-reviewapp/src/image"
 	"github.com/NetKBs/backend-reviewapp/src/schema"
-	"github.com/NetKBs/backend-reviewapp/src/social/bookmark"
 	"github.com/NetKBs/backend-reviewapp/src/social/follow"
 	"github.com/NetKBs/backend-reviewapp/src/social/review"
 	"github.com/NetKBs/backend-reviewapp/src/social/visited"
@@ -98,10 +97,6 @@ func GetUserByFieldService(field string, value interface{}) (userDTO UserRespons
 	if err != nil {
 		return userDTO, err
 	}
-	bookmarkCount, err := bookmark.GetBookmarkCount(user.ID)
-	if err != nil {
-		return userDTO, err
-	}
 	visitedCount, err := visited.GetVisitedCountService(user.ID)
 	if err != nil {
 		return userDTO, err
@@ -121,7 +116,6 @@ func GetUserByFieldService(field string, value interface{}) (userDTO UserRespons
 		Verified:      user.Verified,
 		Followers:     followersCount,
 		Following:     followingCount,
-		Bookmarks:     bookmarkCount,
 		VisitedPlaces: visitedCount,
 		Reviews:       reviewsCount,
 		CreatedAt:     user.CreatedAt.String(),
