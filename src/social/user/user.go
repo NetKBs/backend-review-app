@@ -12,7 +12,6 @@ type UserResponseDTO struct {
 	Verified      bool   `json:"verified"`
 	Followers     uint   `json:"followers"`
 	Following     uint   `json:"following"`
-	Bookmarks     uint   `json:"bookmarks"`
 	VisitedPlaces uint   `json:"visited_places"`
 	Reviews       uint   `json:"reviews"`
 	CreatedAt     string `json:"created_at"`
