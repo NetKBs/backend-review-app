@@ -30,6 +30,48 @@ func GetCommentsByIdReviewRepository(id uint, limit int, cursor uint) (reviewCom
 	return reviewComments, nil
 }
 
+func GetCommentLikesByIdRepository(id uint64, limit int, lastID uint) ([]schema.Reaction, error) {
+	db := config.DB
+	likes := []schema.Reaction{}
+
+	query := db.Table("reactions").
+		Select("*").
+		Where("content_type = 'comment' AND reaction_type = 1 AND content_id = ?", id).
+		Order("id DESC").
+		Limit(limit)
+
+	if lastID != 0 {
+		query = query.Where("id < ?", lastID)
+	}
+
+	if err := query.Scan(&likes).Error; err != nil {
+		return likes, err
+	}
+
+	return likes, nil
+}
+
+func GetCommentDislikesByIdRepository(id uint64, limit int, lastID uint) ([]schema.Reaction, error) {
+	db := config.DB
+	dislikes := []schema.Reaction{}
+
+	query := db.Table("reactions").
+		Select("*").
+		Where("content_type = 'comment' AND reaction_type = 0 AND content_id = ?", id).
+		Order("id DESC").
+		Limit(limit)
+
+	if lastID != 0 {
+		query = query.Where("id < ?", lastID)
+	}
+
+	if err := query.Scan(&dislikes).Error; err != nil {
+		return dislikes, err
+	}
+
+	return dislikes, nil
+}
+
 func GetCommentsByIdRepository(id uint) (comment schema.Comment, err error) {
 	db := config.DB
 

@@ -24,6 +24,48 @@ func GetReviewByIdRepository(id uint) (review schema.Review, err error) {
 	return review, nil
 }
 
+func GetReviewLikesByIdRepository(id uint64, limit int, lastID uint) ([]schema.Reaction, error) {
+	db := config.DB
+	likes := []schema.Reaction{}
+
+	query := db.Table("reactions").
+		Select("*").
+		Where("content_type = 'review' AND reaction_type = 1 AND content_id = ?", id).
+		Order("id DESC").
+		Limit(limit)
+
+	if lastID != 0 {
+		query = query.Where("id < ?", lastID)
+	}
+
+	if err := query.Scan(&likes).Error; err != nil {
+		return likes, err
+	}
+
+	return likes, nil
+}
+
+func GetReviewDislikesByIdRepository(id uint64, limit int, lastID uint) ([]schema.Reaction, error) {
+	db := config.DB
+	dislikes := []schema.Reaction{}
+
+	query := db.Table("reactions").
+		Select("*").
+		Where("content_type = 'review' AND reaction_type = 0 AND content_id = ?", id).
+		Order("id DESC").
+		Limit(limit)
+
+	if lastID != 0 {
+		query = query.Where("id < ?", lastID)
+	}
+
+	if err := query.Scan(&dislikes).Error; err != nil {
+		return dislikes, err
+	}
+
+	return dislikes, nil
+}
+
 func GetReviewsByUserIdRepository(userId uint, limit int, page int) ([]schema.Review, int64, error) {
 	var reviews []schema.Review
 	offset := (page - 1) * limit
