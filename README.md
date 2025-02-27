@@ -72,7 +72,7 @@ Si estás utilizando **Windows**, es posible que encuentres problemas con depend
 
 1. Clonar el repositorio:
 ```sh
-❯ git clone https://github.com/NetKBs/backend-review-app/
+❯ git clone https://github.com/NetKBs/backend-review-app.git
 ```
 
 2. Navegar al directorio del proyecto:

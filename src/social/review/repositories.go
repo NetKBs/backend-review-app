@@ -5,6 +5,16 @@ import (
 	"github.com/NetKBs/backend-reviewapp/src/schema"
 )
 
+func GetCountReviewsByUserIdRepository(id uint) (uint, error) {
+	db := config.DB
+	var count int64
+
+	if err := db.Model(&schema.Review{}).Where("user_id = ?", id).Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return uint(count), nil
+}
+
 func GetReviewByIdRepository(id uint) (review schema.Review, err error) {
 	db := config.DB
 
@@ -12,6 +22,83 @@ func GetReviewByIdRepository(id uint) (review schema.Review, err error) {
 		return review, err
 	}
 	return review, nil
+}
+
+func GetReviewLikesByIdRepository(id uint64, limit int, lastID uint) ([]schema.Reaction, error) {
+	db := config.DB
+	likes := []schema.Reaction{}
+
+	query := db.Table("reactions").
+		Select("*").
+		Where("content_type = 'review' AND reaction_type = 1 AND content_id = ?", id).
+		Order("id DESC").
+		Limit(limit)
+
+	if lastID != 0 {
+		query = query.Where("id < ?", lastID)
+	}
+
+	if err := query.Scan(&likes).Error; err != nil {
+		return likes, err
+	}
+
+	return likes, nil
+}
+
+func GetReviewDislikesByIdRepository(id uint64, limit int, lastID uint) ([]schema.Reaction, error) {
+	db := config.DB
+	dislikes := []schema.Reaction{}
+
+	query := db.Table("reactions").
+		Select("*").
+		Where("content_type = 'review' AND reaction_type = 0 AND content_id = ?", id).
+		Order("id DESC").
+		Limit(limit)
+
+	if lastID != 0 {
+		query = query.Where("id < ?", lastID)
+	}
+
+	if err := query.Scan(&dislikes).Error; err != nil {
+		return dislikes, err
+	}
+
+	return dislikes, nil
+}
+
+func GetReviewsByUserIdRepository(userId uint, limit int, page int) ([]schema.Review, int64, error) {
+	var reviews []schema.Review
+	offset := (page - 1) * limit
+	db := config.DB
+
+	var total int64
+	if err := db.Model(&schema.Review{}).Where("user_id = ?", userId).Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	err := db.Where("user_id = ?", userId).Limit(limit).Offset(offset).Order("created_at DESC").Find(&reviews).Error
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return reviews, total, nil
+}
+
+func GetReviewsByPlaceIdRepository(placeId uint, limit int, page int) ([]schema.Review, int64, error) {
+	var reviews []schema.Review
+	offset := (page - 1) * limit
+	db := config.DB
+
+	var total int64
+	if err := db.Model(&schema.Review{}).Where("place_id = ?", placeId).Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	if err := db.Where("place_id = ?", placeId).Limit(limit).Offset(offset).Order("created_at DESC").Find(&reviews).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return reviews, total, nil
 }
 
 func CreateReviewRepository(review schema.Review) (id uint, err error) {

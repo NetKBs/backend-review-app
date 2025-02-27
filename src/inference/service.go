@@ -102,12 +102,13 @@ func InferenceService(lat string, lon string, image *multipart.FileHeader) (geoa
 	log.Println(analysis)
 
 	ctx := context.TODO()
-	placesDetails, err := place.GetPlacesByCoordsService(ctx, analysis.Categories, lat, lon)
+	placesDTO, err := place.GetPlacesByCoordsService(ctx, analysis.Categories, lon, lat)
 	if err != nil {
 		return nil, err
 	}
+	placesData := placesDTO.Data
 
-	if placesDetails == nil {
+	if placesData == nil {
 		return []geoapify.Place{}, nil
 	}
 
@@ -115,7 +116,7 @@ func InferenceService(lat string, lon string, image *multipart.FileHeader) (geoa
 		var matchedPlaces []geoapify.Place
 		var otherPlaces []geoapify.Place
 
-		for _, place := range placesDetails {
+		for _, place := range placesData {
 			matched := false
 			for _, text := range analysis.VisibleText {
 				if strings.Contains(strings.ToLower(place.Name), strings.ToLower(text)) {
@@ -130,8 +131,8 @@ func InferenceService(lat string, lon string, image *multipart.FileHeader) (geoa
 			}
 		}
 
-		placesDetails = append(matchedPlaces, otherPlaces...)
+		placesData = append(matchedPlaces, otherPlaces...)
 	}
 
-	return placesDetails, nil
+	return placesData, nil
 }

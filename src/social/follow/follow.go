@@ -1,7 +1,6 @@
 package follow
 
 type InputFollow struct {
-	FollowerId uint `json:"follower_id" binding:"required"`
 	FollowedId uint `json:"followed_id" binding:"required"`
 }
 

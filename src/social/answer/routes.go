@@ -10,6 +10,8 @@ func RegisterRoutes(router *gin.Engine) {
 	{
 		answer.GET("/comment/:id", GetAwnsersByCommentIdController)
 		answer.GET("/:id", GetAnswerByIdController)
+		answer.GET("/:id/likes", GetAnswerLikesController)
+		answer.GET("/:id/dislikes", GetAnswerDislikesController)
 		answer.POST("/", CreateAnswerController)
 		answer.PUT("/:id", UpdateAnswerController)
 		answer.DELETE("/:id", DeleteAnswerController)

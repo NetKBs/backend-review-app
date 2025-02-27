@@ -5,12 +5,13 @@ type AnswerResponseDTO struct {
 	UserID    uint   `json:"user_id"`
 	CommentID uint   `json:"comment_id"`
 	Text      string `json:"text"`
+	Likes     uint   `json:"likes"`
+	Dislikes  uint   `json:"dislikes"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
 }
 
 type AnswerCreateDTO struct {
-	UserID    uint   `json:"user_id" binding:"required"`
 	CommentID uint   `json:"comment_id" binding:"required"`
 	Text      string `json:"text" binding:"required"`
 }

@@ -23,7 +23,7 @@ func handleExceptions(err error) (int, string) {
 
 func UserExistsByUsernameController(c *gin.Context) {
 	username := c.Param("username")
-	exists, err := UserExistsByFieldService("username", username)
+	exists, err := UserExistsByFieldService("username", username, 0)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -122,7 +122,7 @@ func UpdatePasswordUserController(c *gin.Context) {
 	})
 }
 
-func UpdateAvatarUserController(c *gin.Context) {
+func UpdateUserController(c *gin.Context) {
 	id := c.Param("id")
 	userId, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
@@ -130,110 +130,24 @@ func UpdateAvatarUserController(c *gin.Context) {
 		return
 	}
 
-	exists, err := UserExistsByFieldService("id", uint(userId))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	if !exists {
-		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
-		return
-	}
-
-	var avatarDTO UserUpdateAvatarDTO
-	if err := c.ShouldBind(&avatarDTO); err != nil {
+	var userDTO UserUpdateDTO
+	if err := c.ShouldBind(&userDTO); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// avatar
-	newUUID := uuid.New()
-	newFilename := fmt.Sprintf("%s.png", strings.TrimSpace(newUUID.String()))
-
-	path := fmt.Sprintf("images/%s", newFilename)
-	if err := c.SaveUploadedFile(avatarDTO.AvatarImage, path); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+	var avatarPath string = ""
+	if userDTO.AvatarImage != nil {
+		newUUID := uuid.New()
+		newFilename := fmt.Sprintf("%s.png", strings.TrimSpace(newUUID.String()))
+		avatarPath = fmt.Sprintf("images/%s", newFilename)
+		if err := c.SaveUploadedFile(userDTO.AvatarImage, avatarPath); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 	}
 
-	if err := UpdateAvatarUserService(uint(userId), path); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Avatar updated successfully",
-	})
-
-}
-
-func UpdateEmailUserController(c *gin.Context) {
-	id := c.Param("id")
-	userId, err := strconv.ParseUint(id, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
-		return
-	}
-
-	var emailDTO UserUpdateEmailDTO
-	if err := c.ShouldBindJSON(&emailDTO); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := UpdateEmailUserService(uint(userId), emailDTO); err != nil {
-		status, errorMessage := handleExceptions(err)
-		c.JSON(status, gin.H{"error": errorMessage})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Email updated successfully",
-	})
-
-}
-
-func UpdateUserDisplayNameController(c *gin.Context) {
-	id := c.Param("id")
-	userId, err := strconv.ParseUint(id, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
-		return
-	}
-
-	var userDTO UserUpdateDisplayNameDTO
-	if err := c.ShouldBindJSON(&userDTO); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := UpdateUserDisplayNameService(uint(userId), userDTO); err != nil {
-		status, errorMessage := handleExceptions(err)
-		c.JSON(status, gin.H{"error": errorMessage})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": "User updated successfully",
-	})
-
-}
-
-func UpdateUsernameUserController(c *gin.Context) {
-	id := c.Param("id")
-	userId, err := strconv.ParseUint(id, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
-		return
-	}
-
-	var userDTO UserUpdateUsernameDTO
-	if err := c.ShouldBindJSON(&userDTO); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := UpdateUserUsernameService(uint(userId), userDTO); err != nil {
+	if err := UpdateUserService(uint(userId), userDTO, avatarPath); err != nil {
 		status, errorMessage := handleExceptions(err)
 		c.JSON(status, gin.H{"error": errorMessage})
 		return

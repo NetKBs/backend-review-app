@@ -10,19 +10,33 @@ import (
 func GetAwnsersByCommentIdController(c *gin.Context) {
 	id := c.Param("id")
 	ansCommentsId, err := strconv.ParseUint(id, 10, 64)
-
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
 
-	answer, err := GetAnswersByCommentIdService(uint(ansCommentsId))
+	limitStr := c.DefaultQuery("limit", "10")
+	cursor := c.DefaultQuery("cursor", "0")
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit value"})
+		return
+	}
+
+	cursorUint, err := strconv.ParseUint(cursor, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid cursor value"})
+		return
+	}
+
+	answers, nextCursor, err := GetAnswersByCommentIdService(uint(ansCommentsId), limit, uint(cursorUint))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"Answer": answer})
+	c.JSON(http.StatusOK, gin.H{"answers": answers, "next_cursor": nextCursor})
 }
 
 func GetAnswerByIdController(c *gin.Context) {
@@ -43,6 +57,66 @@ func GetAnswerByIdController(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"Answer": answer})
 }
 
+func GetAnswerLikesController(c *gin.Context) {
+	id := c.Param("id")
+	revId, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+
+	limitStr := c.DefaultQuery("limit", "10")
+	limit := 10
+	if limitStr != "" {
+		limit, err = strconv.Atoi(limitStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit value"})
+			return
+		}
+	}
+
+	cursor := c.DefaultQuery("cursor", "")
+
+	likes, nextCursor, err := GetAnswerLikesByIdService(revId, limit, cursor)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": likes, "next_cursor": nextCursor})
+}
+
+func GetAnswerDislikesController(c *gin.Context) {
+	id := c.Param("id")
+	revId, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+
+	limitStr := c.DefaultQuery("limit", "10")
+	limit := 10
+	if limitStr != "" {
+		limit, err = strconv.Atoi(limitStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit value"})
+			return
+		}
+	}
+
+	cursor := c.DefaultQuery("cursor", "")
+
+	dislikes, nextCursor, err := GetAnswerDislikesByIdService(revId, limit, cursor)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": dislikes, "next_cursor": nextCursor})
+}
+
 func CreateAnswerController(c *gin.Context) {
 	AnswerCreateDTO := AnswerCreateDTO{}
 	if err := c.ShouldBind(&AnswerCreateDTO); err != nil {
@@ -50,7 +124,13 @@ func CreateAnswerController(c *gin.Context) {
 		return
 	}
 
-	id, err := CreateAnswerService(AnswerCreateDTO)
+	userId, ok := c.Get("userId")
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user ID"})
+		return
+	}
+
+	id, err := CreateAnswerService(AnswerCreateDTO, userId.(uint))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

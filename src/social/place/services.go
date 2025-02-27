@@ -2,6 +2,7 @@ package place
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/NetKBs/backend-reviewapp/geoapify"
 )
@@ -25,8 +26,28 @@ func GetPlaceDetailsByMapsIdService(ctx context.Context, mapsID string) (placeDe
 	return placeDetailsDTO, err
 }
 
-func GetPlaceDetailsByCoordsService(ctx context.Context, lat string, lon string) (placeDetailsDTO PlaceDetailsResponseDTO, err error) {
-	placeDetails, err := geoapify.GetPlaceDetailsByCoord(lat, lon)
+func GetPlaceDetailsByPlaceIdService(ctx context.Context, placeId int) (placeDetailsDTO PlaceDetailsResponseDTO, err error) {
+
+	place, err := findPlaceByPlaceIdRepo(placeId)
+	if err != nil {
+		return placeDetailsDTO, err
+	}
+	placeDetails, err := geoapify.GetPlaceDetailsById(place.MapsId)
+	if err != nil {
+		return placeDetailsDTO, err
+	}
+
+	placeDetailsDTO = PlaceDetailsResponseDTO{
+		ID:        place.ID,
+		Details:   placeDetails,
+		CreatedAt: place.CreatedAt.String(),
+		UpdatedAt: place.UpdatedAt.String(),
+	}
+	return placeDetailsDTO, err
+}
+
+func GetPlaceDetailsByCoordsService(ctx context.Context, lon, lat string) (placeDetailsDTO PlaceDetailsResponseDTO, err error) {
+	placeDetails, err := geoapify.GetPlaceDetailsByCoord(lon, lat)
 	if err != nil {
 		return placeDetailsDTO, err
 	}
@@ -45,7 +66,7 @@ func GetPlaceDetailsByCoordsService(ctx context.Context, lat string, lon string)
 }
 
 // categories: slice of strings
-func GetPlacesByCoordsService(ctx context.Context, categories []string, lat, lon string) (places geoapify.Places, err error) {
+func GetPlacesByCoordsService(ctx context.Context, categories []string, lon, lat string) (places PlacesResponseDTO, err error) {
 	var catString string
 	for i, v := range categories {
 		if i == 0 {
@@ -54,9 +75,18 @@ func GetPlacesByCoordsService(ctx context.Context, categories []string, lat, lon
 			catString = catString + "," + v
 		}
 	}
-	places, err = geoapify.GetPlacesAroundCoords(catString, lat, lon)
+	placesRaw, err := geoapify.GetPlacesAroundCoords(catString, lon, lat)
+
 	if err != nil {
 		return places, err
+	}
+
+	centerLon, _ := strconv.ParseFloat(lon, 64)
+	centerLat, _ := strconv.ParseFloat(lat, 64)
+	places = PlacesResponseDTO{
+		CenterLon: centerLon,
+		CenterLan: centerLat,
+		Data:      placesRaw,
 	}
 	return places, err
 }

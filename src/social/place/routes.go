@@ -11,4 +11,5 @@ func RegisterRoutes(router *gin.Engine) {
 	group.GET("/details", getPlaceDetailsController)
 	group.GET("/autocomplete", getAutocompleteResultController)
 	group.GET("/", getPlacesController)
+	group.GET("/details/:place_id", getPlaceDetailsByPlaceIdController)
 }
