@@ -23,6 +23,7 @@ func LoginService(username, password string) (string, error) {
 	var claims = Claims{
 		UserId:   user.ID,
 		Username: user.Username,
+		UserRole: user.Role,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},

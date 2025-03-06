@@ -49,8 +49,10 @@ func AuthMiddleware() gin.HandlerFunc {
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			userID := uint(claims["user_id"].(float64))
 			username := claims["username"].(string)
+			userRole := claims["user_role"].(string)
 			c.Set("userId", userID)
 			c.Set("username", username)
+			c.Set("userRole", userRole)
 
 			// Ignore verification for some routes
 			for _, route := range ignoreRoutesOfVerification {

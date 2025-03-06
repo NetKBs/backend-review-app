@@ -27,17 +27,17 @@ func GetFeedService(userId uint, limit int, cursor string) ([]review.ReviewRespo
 	}
 
 	for _, re := range reviews {
-		reactionsCount, err := reaction.GetReactionsCountService(re.UserId, "review")
+		reactionsCount, err := reaction.GetReactionsCountService(re.ID, "review")
 		if err != nil {
 			return reviewsResponse, "", err
 		}
 
-		commentsCount, err := comment.GetCommentsReviewCountService(re.UserId)
+		commentsCount, err := comment.GetCommentsReviewCountService(re.ID)
 		if err != nil {
 			return reviewsResponse, "", err
 		}
 
-		imagesPath, err := image.GetReviewImagesService(re.UserId)
+		imagesPath, err := image.GetReviewImagesService(re.ID)
 		if err != nil {
 			return reviewsResponse, "", err
 		}

@@ -10,6 +10,7 @@ type UserResponseDTO struct {
 	Email         string `json:"email"`
 	Description   string `json:"description"`
 	Verified      bool   `json:"verified"`
+	Role          string `json:"role"`
 	Followers     uint   `json:"followers"`
 	Following     uint   `json:"following"`
 	Bookmarks     uint   `json:"bookmarks"`

@@ -2,6 +2,7 @@ package review
 
 import (
 	"math"
+	"strconv"
 
 	"github.com/NetKBs/backend-reviewapp/src/image"
 	"github.com/NetKBs/backend-reviewapp/src/schema"
@@ -50,6 +51,84 @@ func GetReviewByIdService(id uint) (reviewDTO ReviewResponseDTO, err error) {
 	}
 
 	return reviewDTO, nil
+}
+
+func GetReviewLikesByIdService(id uint64, limit int, cursor string) ([]reaction.ReactionResponseDTO, string, error) {
+	reviewLikes := []reaction.ReactionResponseDTO{}
+	var lastID uint = 0
+
+	if cursor != "" {
+		cursorUint, err := strconv.ParseUint(cursor, 10, 64)
+		if err != nil {
+			return reviewLikes, "", err
+		}
+		lastID = uint(cursorUint)
+	}
+
+	likes, err := GetReviewLikesByIdRepository(id, limit, lastID)
+	if err != nil {
+		return reviewLikes, "", err
+	}
+
+	for _, like := range likes {
+		likeDTO := reaction.ReactionResponseDTO{
+			ID:           like.ID,
+			UserId:       like.UserId,
+			ContentId:    like.ContentId,
+			ContentType:  like.ContentType,
+			ReactionType: like.ReactionType,
+			CreatedAt:    like.CreatedAt.String(),
+			UpdatedAt:    like.UpdatedAt.String(),
+		}
+
+		reviewLikes = append(reviewLikes, likeDTO)
+	}
+
+	nextCursor := ""
+	if len(likes) > 0 {
+		nextCursor = strconv.FormatUint(uint64(likes[len(likes)-1].ID), 10)
+	}
+
+	return reviewLikes, nextCursor, nil
+}
+
+func GetReviewDislikesByIdService(id uint64, limit int, cursor string) ([]reaction.ReactionResponseDTO, string, error) {
+	reviewDislikes := []reaction.ReactionResponseDTO{}
+	var lastID uint = 0
+
+	if cursor != "" {
+		cursorUint, err := strconv.ParseUint(cursor, 10, 64)
+		if err != nil {
+			return reviewDislikes, "", err
+		}
+		lastID = uint(cursorUint)
+	}
+
+	dislikes, err := GetReviewDislikesByIdRepository(id, limit, lastID)
+	if err != nil {
+		return reviewDislikes, "", err
+	}
+
+	for _, dislike := range dislikes {
+		dislikeDTO := reaction.ReactionResponseDTO{
+			ID:           dislike.ID,
+			UserId:       dislike.UserId,
+			ContentId:    dislike.ContentId,
+			ContentType:  dislike.ContentType,
+			ReactionType: dislike.ReactionType,
+			CreatedAt:    dislike.CreatedAt.String(),
+			UpdatedAt:    dislike.UpdatedAt.String(),
+		}
+
+		reviewDislikes = append(reviewDislikes, dislikeDTO)
+	}
+
+	nextCursor := ""
+	if len(dislikes) > 0 {
+		nextCursor = strconv.FormatUint(uint64(dislikes[len(dislikes)-1].ID), 10)
+	}
+
+	return reviewDislikes, nextCursor, nil
 }
 
 func GetReviewsByPlaceIdService(placeId uint, limit int, page int) ([]ReviewResponseDTO, schema.Pagination, error) {

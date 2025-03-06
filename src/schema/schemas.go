@@ -13,6 +13,7 @@ type User struct {
 	Password         string
 	Description      string
 	Verified         bool             `gorm:"default:false"`
+	Role             string           `gorm:"default:'user';check:role IN ('user', 'admin')"` // user, admin
 	Reviews          []Review         `gorm:"foreignKey:UserId"`
 	Comments         []Comment        `gorm:"foreignKey:UserId"`
 	Answers          []Answer         `gorm:"foreignKey:UserId"`

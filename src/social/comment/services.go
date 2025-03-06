@@ -58,6 +58,84 @@ func GetCommentsByIdReviewService(id uint, limit int, cursor uint) ([]CommentRes
 	return reviewComments, nextCursor, nil
 }
 
+func GetReviewLikesByIdService(id uint64, limit int, cursor string) ([]reaction.ReactionResponseDTO, string, error) {
+	commentLikes := []reaction.ReactionResponseDTO{}
+	var lastID uint = 0
+
+	if cursor != "" {
+		cursorUint, err := strconv.ParseUint(cursor, 10, 64)
+		if err != nil {
+			return commentLikes, "", err
+		}
+		lastID = uint(cursorUint)
+	}
+
+	likes, err := GetCommentLikesByIdRepository(id, limit, lastID)
+	if err != nil {
+		return commentLikes, "", err
+	}
+
+	for _, like := range likes {
+		likeDTO := reaction.ReactionResponseDTO{
+			ID:           like.ID,
+			UserId:       like.UserId,
+			ContentId:    like.ContentId,
+			ContentType:  like.ContentType,
+			ReactionType: like.ReactionType,
+			CreatedAt:    like.CreatedAt.String(),
+			UpdatedAt:    like.UpdatedAt.String(),
+		}
+
+		commentLikes = append(commentLikes, likeDTO)
+	}
+
+	nextCursor := ""
+	if len(likes) > 0 {
+		nextCursor = strconv.FormatUint(uint64(likes[len(likes)-1].ID), 10)
+	}
+
+	return commentLikes, nextCursor, nil
+}
+
+func GetReviewDislikesByIdService(id uint64, limit int, cursor string) ([]reaction.ReactionResponseDTO, string, error) {
+	commentDislikes := []reaction.ReactionResponseDTO{}
+	var lastID uint = 0
+
+	if cursor != "" {
+		cursorUint, err := strconv.ParseUint(cursor, 10, 64)
+		if err != nil {
+			return commentDislikes, "", err
+		}
+		lastID = uint(cursorUint)
+	}
+
+	dislikes, err := GetCommentDislikesByIdRepository(id, limit, lastID)
+	if err != nil {
+		return commentDislikes, "", err
+	}
+
+	for _, dislike := range dislikes {
+		dislikeDTO := reaction.ReactionResponseDTO{
+			ID:           dislike.ID,
+			UserId:       dislike.UserId,
+			ContentId:    dislike.ContentId,
+			ContentType:  dislike.ContentType,
+			ReactionType: dislike.ReactionType,
+			CreatedAt:    dislike.CreatedAt.String(),
+			UpdatedAt:    dislike.UpdatedAt.String(),
+		}
+
+		commentDislikes = append(commentDislikes, dislikeDTO)
+	}
+
+	nextCursor := ""
+	if len(dislikes) > 0 {
+		nextCursor = strconv.FormatUint(uint64(dislikes[len(dislikes)-1].ID), 10)
+	}
+
+	return commentDislikes, nextCursor, nil
+}
+
 func GetCommentByIdService(id uint) (commentDTO CommentResponseDTO, err error) {
 	comment, err := GetCommentsByIdRepository(id)
 	if err != nil {
