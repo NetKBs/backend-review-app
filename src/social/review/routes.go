@@ -15,6 +15,6 @@ func RegisterRoutes(router *gin.Engine) {
 		reviews.GET("/user/:id", GetReviewsByUserIdController)
 		reviews.POST("/", CreateReviewController)
 		reviews.PUT("/:id", UpdateReviewController)
-		reviews.DELETE("/:id", DeleteReviewController)
+		reviews.DELETE("/:id", middlewares.AdminRequired(), DeleteReviewController)
 	}
 }

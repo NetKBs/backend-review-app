@@ -14,6 +14,6 @@ func RegisterRoutes(router *gin.Engine) {
 		comments.GET("/review/:id", GetCommentsByIdReviewController)
 		comments.POST("/", CreateCommentController)
 		comments.PUT("/:id", UpdateCommentController)
-		comments.DELETE("/:id", DeleteCommentController)
+		comments.DELETE("/:id", middlewares.AdminRequired(), DeleteCommentController)
 	}
 }
