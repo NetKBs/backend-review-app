@@ -38,9 +38,10 @@ func DeleteReviewImagesService(id uint) (err error) {
 	}
 
 	for _, imagePath := range imagePaths {
-		if err = os.Remove(imagePath); err != nil {
+		os.Remove(imagePath)
+		/*if err = os.Remove(imagePath); err != nil {
 			return err
-		}
+		}*/
 	}
 
 	if err = DeleteReviewImagesRepository(id); err != nil {

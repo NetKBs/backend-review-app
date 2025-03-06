@@ -206,9 +206,7 @@ func DeleteUserByIdService(id uint) error {
 		return err
 	}
 
-	if err := image.DeleteImageByPathService(avatarPath); err != nil {
-		return err
-	}
+	_ = image.DeleteImageByPathService(avatarPath)
 
 	return nil
 }
