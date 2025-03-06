@@ -119,6 +119,7 @@ func GetUserByFieldService(field string, value interface{}) (userDTO UserRespons
 		Email:         user.Email,
 		Description:   user.Description,
 		Verified:      user.Verified,
+		Role:          user.Role,
 		Followers:     followersCount,
 		Following:     followingCount,
 		Bookmarks:     bookmarkCount,

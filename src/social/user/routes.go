@@ -14,7 +14,7 @@ func RegisterRoutes(router *gin.Engine) {
 		users.GET("/username/:username", middlewares.AuthMiddleware(), GetUserByUsernameController)
 
 		users.POST("/", CreateUserController)
-		users.DELETE("/:id", middlewares.AuthMiddleware(), DeleteUserbyIdController)
+		users.DELETE("/:id", middlewares.AuthMiddleware(), middlewares.AdminRequired(), DeleteUserbyIdController)
 
 		users.PUT("/:id", middlewares.AuthMiddleware(), UpdateUserController)                  // General user update
 		users.PUT("/password/:id", middlewares.AuthMiddleware(), UpdatePasswordUserController) // Password update
