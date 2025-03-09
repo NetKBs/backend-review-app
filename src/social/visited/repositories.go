@@ -8,6 +8,27 @@ import (
 	"gorm.io/gorm"
 )
 
+func GetVisitedPlacesByUserIdRepository(userId uint) ([]uint, error) {
+	db := config.DB
+	var user schema.User
+	var visitedPlaces []schema.Place
+
+	if err := db.Where("id = ?", userId).First(&user).Error; err != nil {
+		return nil, err
+	}
+
+	if err := db.Model(&user).Association("VisitedPlaces").Find(&visitedPlaces); err != nil {
+		return nil, err
+	}
+
+	var visitedPlaceIDs []uint
+	for _, place := range visitedPlaces {
+		visitedPlaceIDs = append(visitedPlaceIDs, place.ID)
+	}
+
+	return visitedPlaceIDs, nil
+}
+
 func GetVisitedCountRepository(userId uint) (visitedCount uint, err error) {
 	db := config.DB
 	var user schema.User

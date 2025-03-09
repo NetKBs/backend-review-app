@@ -12,6 +12,7 @@ import (
 	"github.com/NetKBs/backend-reviewapp/src/resend"
 	"github.com/NetKBs/backend-reviewapp/src/social/answer"
 	"github.com/NetKBs/backend-reviewapp/src/social/auth"
+	"github.com/NetKBs/backend-reviewapp/src/social/bookmark"
 	"github.com/NetKBs/backend-reviewapp/src/social/comment"
 	"github.com/NetKBs/backend-reviewapp/src/social/feed"
 	"github.com/NetKBs/backend-reviewapp/src/social/place"
@@ -52,6 +53,7 @@ func main() {
 	resend.RegisterRoutes(r)
 	feed.RegisterRoutes(r)
 	visited.RegisterRoutes(r)
+	bookmark.RegisterRoutes(r)
 
 	r.Run()
 }
