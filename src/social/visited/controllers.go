@@ -7,6 +7,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func GetVisitedPlacesByUserIdController(c *gin.Context) {
+	userId, ok := c.Get("userId")
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user ID"})
+		return
+	}
+
+	placesId, err := GetVisitedPlacesByUserIdService(userId.(uint))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": placesId})
+
+}
+
 func GetVisitedCountController(c *gin.Context) {
 	userIDStr := c.Param("user_id")
 	userID, err := strconv.Atoi(userIDStr)
