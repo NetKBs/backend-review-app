@@ -20,6 +20,19 @@ type UserResponseDTO struct {
 	UpdatedAt     string `json:"updated_at"`
 }
 
+type UserSearchResultDTO struct {
+	ID          uint   `json:"id"`
+	Username    string `json:"username"`
+	AvatarUrl   string `json:"avatar_url"`
+	DisplayName string `json:"display_name"`
+	Email       string `json:"email"`
+	Description string `json:"description"`
+	Verified    bool   `json:"verified"`
+	Role        string `json:"role"`
+	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"updated_at"`
+}
+
 type UserCreateDTO struct {
 	Username    string                `form:"username" binding:"required"`
 	AvatarImage *multipart.FileHeader `form:"avatar_image" binding:"required"`

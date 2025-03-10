@@ -97,6 +97,20 @@ func GetUserByUsernameController(c *gin.Context) {
 		"data": user})
 }
 
+func SearchUserByUsernameController(c *gin.Context) {
+	username := c.Query("text")
+
+	user, err := SearchUserByUsernameService(username)
+	if err != nil {
+		status, errorMessage := handleExceptions(err)
+		c.JSON(status, gin.H{"error": errorMessage})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": user})
+}
+
 func UpdatePasswordUserController(c *gin.Context) {
 	id := c.Param("id")
 	userId, err := strconv.ParseUint(id, 10, 64)

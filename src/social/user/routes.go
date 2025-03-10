@@ -13,6 +13,8 @@ func RegisterRoutes(router *gin.Engine) {
 		users.GET("/id/:id", middlewares.AuthMiddleware(), GetUserByIdController)
 		users.GET("/username/:username", middlewares.AuthMiddleware(), GetUserByUsernameController)
 
+		users.GET("/search", middlewares.AuthMiddleware(), SearchUserByUsernameController)
+
 		users.POST("/", CreateUserController)
 		users.DELETE("/:id", middlewares.AuthMiddleware(), middlewares.AdminRequired(), DeleteUserbyIdController)
 

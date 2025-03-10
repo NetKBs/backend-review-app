@@ -63,6 +63,31 @@ func CreateUserService(userDTO UserCreateDTO) (uint, error) {
 	return id, nil
 }
 
+func SearchUserByUsernameService(username string) ([]UserSearchResultDTO, error) {
+	users, err := SearchUserByUsernameRepository(username)
+	if err != nil {
+		return []UserSearchResultDTO{}, err
+	}
+
+	usersDTO := []UserSearchResultDTO{}
+	for _, user := range users {
+		userDTO := UserSearchResultDTO{
+			ID:          user.ID,
+			Username:    user.Username,
+			AvatarUrl:   getStringPointer(user.AvatarUrl),
+			DisplayName: user.DisplayName,
+			Email:       user.Email,
+			Description: user.Description,
+			Verified:    user.Verified,
+			Role:        user.Role,
+			CreatedAt:   user.CreatedAt.String(),
+			UpdatedAt:   user.UpdatedAt.String(),
+		}
+		usersDTO = append(usersDTO, userDTO)
+	}
+	return usersDTO, nil
+}
+
 func GetUserByFieldService(field string, value interface{}) (userDTO UserResponseDTO, err error) {
 	var user schema.User
 
@@ -79,6 +104,7 @@ func GetUserByFieldService(field string, value interface{}) (userDTO UserRespons
 		if !ok {
 			return userDTO, errors.New("invalid username type")
 		}
+
 		user, err = GetUserByUsernameRepository(username)
 
 	default:

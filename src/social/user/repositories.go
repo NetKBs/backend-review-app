@@ -51,10 +51,23 @@ func GetUserByIdRepository(id uint) (user schema.User, err error) {
 	return user, nil
 }
 
-func GetUserByUsernameRepository(username string) (user schema.User, err error) {
+func SearchUserByUsernameRepository(username string) ([]schema.User, error) {
 	db := config.DB
+	user := []schema.User{}
+	var err error
 
-	if err = db.Where("username = ?", username).First(&user).Error; err != nil {
+	if err = db.Where("username LIKE ?", "%"+username+"%").Limit(5).Find(&user).Error; err != nil {
+		return user, err
+	}
+	return user, nil
+}
+
+func GetUserByUsernameRepository(username string) (schema.User, error) {
+	db := config.DB
+	user := schema.User{}
+	var err error
+
+	if err = db.Where("username = ?", username).Find(&user).Error; err != nil {
 		return user, err
 	}
 	return user, nil
