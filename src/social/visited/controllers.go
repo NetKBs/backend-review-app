@@ -8,19 +8,34 @@ import (
 )
 
 func GetVisitedPlacesByUserIdController(c *gin.Context) {
-	userId, ok := c.Get("userId")
-	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user ID"})
+	userIDStr := c.Param("user_id")
+	userId, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
 		return
 	}
 
-	placesId, err := GetVisitedPlacesByUserIdService(userId.(uint))
+	limitStr := c.DefaultQuery("limit", "10")
+	cursor := c.DefaultQuery("cursor", "0")
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit value"})
+		return
+	}
+
+	cursorUint, err := strconv.ParseUint(cursor, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid cursor value"})
+		return
+	}
+
+	placesId, nextCursor, err := GetVisitedPlacesByUserIdService(uint(userId), limit, uint(cursorUint))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": placesId})
-
+	c.JSON(http.StatusOK, gin.H{"data": placesId, "next_cursor": nextCursor})
 }
 
 func GetVisitedCountController(c *gin.Context) {

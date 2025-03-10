@@ -2,6 +2,7 @@ package bookmark
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,13 +13,29 @@ func GetBookmarksController(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user ID"})
 		return
 	}
-	bookmarkedPlaces, err := GetBookmarksService(userId.(uint))
+
+	limitStr := c.DefaultQuery("limit", "10")
+	cursor := c.DefaultQuery("cursor", "0")
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit value"})
+		return
+	}
+
+	cursorUint, err := strconv.ParseUint(cursor, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid cursor value"})
+		return
+	}
+
+	bookmarkedPlaces, nextCursor, err := GetBookmarksService(userId.(uint), limit, uint(cursorUint))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": bookmarkedPlaces})
+	c.JSON(http.StatusOK, gin.H{"data": bookmarkedPlaces, "next_cursor": nextCursor})
 }
 
 func CreateBookmarkController(c *gin.Context) {

@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetVisitedPlacesByUserIdRepository(userId uint) ([]uint, error) {
+func GetVisitedPlacesByUserIdRepository(userId uint, limit int, cursor uint) ([]uint, error) {
 	db := config.DB
 	var user schema.User
 	var visitedPlaces []schema.Place
@@ -17,9 +17,18 @@ func GetVisitedPlacesByUserIdRepository(userId uint) ([]uint, error) {
 		return nil, err
 	}
 
-	if err := db.Model(&user).Association("VisitedPlaces").Find(&visitedPlaces); err != nil {
+	query := db.Model(&user).Preload("VisitedPlaces", func(db *gorm.DB) *gorm.DB {
+		if cursor != 0 {
+			return db.Order("id DESC").Where("id < ?", cursor).Limit(limit)
+		}
+		return db.Order("id DESC").Limit(limit)
+	})
+
+	if err := query.Find(&user).Error; err != nil {
 		return nil, err
 	}
+
+	visitedPlaces = user.VisitedPlaces
 
 	var visitedPlaceIDs []uint
 	for _, place := range visitedPlaces {
