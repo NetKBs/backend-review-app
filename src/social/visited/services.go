@@ -2,26 +2,32 @@ package visited
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/NetKBs/backend-reviewapp/src/social/place"
 )
 
-func GetVisitedPlacesByUserIdService(userId uint) ([]place.PlaceDetailsResponseDTO, error) {
-	placeIds, err := GetVisitedPlacesByUserIdRepository(userId)
+func GetVisitedPlacesByUserIdService(userId uint, limit int, cursor uint) ([]place.PlaceDetailsResponseDTO, string, error) {
+	placeIds, err := GetVisitedPlacesByUserIdRepository(userId, limit, cursor)
 	if err != nil {
-		return []place.PlaceDetailsResponseDTO{}, err
+		return []place.PlaceDetailsResponseDTO{}, "", err
 	}
 
 	visitedPlaces := []place.PlaceDetailsResponseDTO{}
 	for _, placeId := range placeIds {
 		placeDetail, err := place.GetPlaceDetailsByPlaceIdService(context.TODO(), int(placeId))
 		if err != nil {
-			return nil, err
+			return nil, "", err
 		}
 		visitedPlaces = append(visitedPlaces, placeDetail)
 	}
 
-	return visitedPlaces, nil
+	nextCursor := ""
+	if len(placeIds) > 0 {
+		nextCursor = strconv.FormatUint(uint64(placeIds[len(placeIds)-1]), 10)
+	}
+
+	return visitedPlaces, nextCursor, nil
 }
 
 func GetVisitedCountService(userId uint) (visitedCount uint, err error) {

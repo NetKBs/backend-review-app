@@ -3,6 +3,7 @@ package bookmark
 import (
 	"github.com/NetKBs/backend-reviewapp/config"
 	"github.com/NetKBs/backend-reviewapp/src/schema"
+	"gorm.io/gorm"
 )
 
 func GetBookmarkCountRepository(userId uint) (bookmarkCount uint, err error) {
@@ -17,7 +18,7 @@ func GetBookmarkCountRepository(userId uint) (bookmarkCount uint, err error) {
 	return bookmarkCount, nil
 }
 
-func GetBookmarksRepository(userId uint) ([]uint, error) {
+func GetBookmarksRepository(userId uint, limit int, cursor uint) ([]uint, error) {
 	db := config.DB
 	var user schema.User
 	var bookmarkedPlaces []schema.Place
@@ -26,16 +27,24 @@ func GetBookmarksRepository(userId uint) ([]uint, error) {
 		return nil, err
 	}
 
-	if err := db.Model(&user).Association("BookmarkedPlaces").Find(&bookmarkedPlaces); err != nil {
+	query := db.Model(&user).Preload("BookmarkedPlaces", func(db *gorm.DB) *gorm.DB {
+		if cursor != 0 {
+			return db.Order("id DESC").Limit(limit).Where("id < ?", cursor)
+		}
+		return db.Order("id DESC").Limit(limit)
+	})
+
+	if err := query.Find(&user).Error; err != nil {
 		return nil, err
 	}
 
-	var bookmarkedPlacesIDs []uint
+	bookmarkedPlaces = user.BookmarkedPlaces
+	var bookmarkedPlaceIDs []uint
 	for _, place := range bookmarkedPlaces {
-		bookmarkedPlacesIDs = append(bookmarkedPlacesIDs, place.ID)
+		bookmarkedPlaceIDs = append(bookmarkedPlaceIDs, place.ID)
 	}
 
-	return bookmarkedPlacesIDs, nil
+	return bookmarkedPlaceIDs, nil
 }
 
 func CreateBookmarkRepository(userId uint, placeId uint) error {

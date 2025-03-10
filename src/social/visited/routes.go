@@ -11,7 +11,7 @@ func RegisterRoutes(router *gin.Engine) {
 		visited.GET("/count/:user_id", GetVisitedCountController)
 		visited.GET("/visitors/:place_id", GetVisitorsCount)
 
-		visited.GET("/", GetVisitedPlacesByUserIdController)
+		visited.GET("/:user_id", GetVisitedPlacesByUserIdController)
 
 		visited.POST("/", CreateVisitedPlace)
 		visited.DELETE("/", DeleteVisitedPlace)
