@@ -8,7 +8,7 @@ import (
 )
 
 const placesV2 = "/v2/places?"
-const radius = "50"
+const radius = "500"
 const placesLimit = "10"
 
 func GetPlacesAroundCoords(cat, lon, lat string) (places Places, err error) {
