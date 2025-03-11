@@ -12,7 +12,7 @@ func GetFeedRepository(userId uint, limit int, lastID uint) ([]schema.Review, er
 	query := db.Table("follow").
 		Select("reviews.*, follow.followed_id").
 		Joins("inner join reviews on reviews.user_id = follow.followed_id").
-		Where("follow.follower_id = ?", userId).
+		Where("follow.follower_id = ? AND reviews.deleted_at IS NULL", userId).
 		Order("reviews.id DESC").
 		Limit(limit)
 
